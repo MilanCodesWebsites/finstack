@@ -1,0 +1,35 @@
+import type React from "react"
+import type { Metadata } from "next"
+import { Manrope } from "next/font/google"
+import { GeistMono } from "geist/font/mono"
+import { Analytics } from "@vercel/analytics/next"
+import "./globals.css"
+import { Suspense } from "react"
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+})
+
+export const metadata: Metadata = {
+  title: "Finstack - Move value with confidence",
+  description:
+    "Finstack is the secure web platform where you buy, sell, and exchange currencies and gift cards—fast, transparent, and built for growth.",
+  generator: "v0.app",
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en">
+      <body className={`font-sans ${manrope.variable} ${GeistMono.variable} overflow-x-hidden`}>
+        <Suspense fallback={null}>{children}</Suspense>
+        <Analytics />
+      </body>
+    </html>
+  )
+}
