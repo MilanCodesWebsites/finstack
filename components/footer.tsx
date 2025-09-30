@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Twitter, Linkedin, Instagram } from "lucide-react"
+import Image from "next/image"
+import BlurText from "@/components/ui/blur-text"
 
 export function Footer() {
   return (
@@ -9,16 +11,15 @@ export function Footer() {
           {/* Left Content */}
           <div className="space-y-8">
             <div className="space-y-6">
-              <h2 className="text-4xl lg:text-5xl font-bold leading-tight text-balance">
-                Ready to move
-                <br />
-                value with
-                <br />
-                confidence?
-              </h2>
+              <BlurText
+                text="Ready to move money smarter?"
+                delay={150}
+                animateBy="words"
+                direction="top"
+                className="text-4xl lg:text-5xl font-bold leading-tight text-balance"
+              />
               <p className="text-xl text-gray-300 leading-relaxed text-pretty">
-                Join thousands of users who trust Finstack to exchange currencies and gift cards securely and
-                efficiently.
+                Join thousands of users already sending and receiving money across the world with speed, security, and the best rates.
               </p>
             </div>
 
@@ -30,13 +31,16 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Right Content - Decorative Elements */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl"></div>
-            <div className="relative z-10 flex justify-center">
-              <div className="w-32 h-32 bg-primary/20 rounded-full flex items-center justify-center">
-                <img src="/imgs/logo.png" alt="Finstack logo" className="w-16 h-16 object-contain rounded-full" />
-              </div>
+          {/* Right Content - CTA Image */}
+          <div className="relative flex justify-center items-center">
+            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96">
+              <Image 
+                src="/cta-img.png" 
+                alt="CTA illustration" 
+                fill 
+                className="object-contain"
+                priority
+              />
             </div>
           </div>
         </div>

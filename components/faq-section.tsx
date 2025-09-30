@@ -1,45 +1,53 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
+import BlurText from "@/components/ui/blur-text"
 
 export function FAQSection() {
   const faqs = [
     {
-      question: "How do I sign up on Finstack?",
+      question: "What makes Finstack different from traditional money transfer services?",
       answer:
-        "Getting started is simple! Create your account in under 3 minutes, verify your identity with our secure process, and you can start trading immediately.",
+        "Finstack eliminates hidden fees and slow transfers by offering seamless cross-border transactions with favorable exchange rates. It’s built to be faster, more transparent, and more affordable than traditional banks or remittance services.",
     },
     {
-      question: "What currencies and gift cards can I trade?",
-      answer:
-        "Finstack supports a wide range of popular currencies and gift cards. You can trade major cryptocurrencies, fiat currencies, and gift cards from leading brands and retailers.",
+      question: "Can I send money instantly with Finstack?",
+      answer: "Yes. Finstack is designed for real-time transactions, so your money moves across borders quickly, ensuring recipients get access without long delays.",
     },
     {
-      question: "How does Finstack ensure security?",
+      question: "Does Finstack support P2P transfers?",
       answer:
-        "We use bank-level security with end-to-end encryption, multi-factor authentication, and all users go through our comprehensive verification process to ensure a safe trading environment.",
+        "Absolutely. With Finstack’s peer-to-peer system, you can send and receive money directly from other users worldwide, making it easy to move funds between individuals without middlemen.",
     },
     {
-      question: "What are the fees for trading?",
+      question: "Is Finstack safe for international transfers?",
       answer:
-        "Finstack uses transparent pricing with competitive rates. Our fees are clearly displayed before each transaction, with no hidden charges or surprise costs.",
+        "Security is a core part of Finstack. Every transfer is encrypted and monitored for fraud, ensuring your money and personal data are always protected.",
     },
     {
-      question: "How long do transactions take?",
+      question: "Who should use Finstack?",
       answer:
-        "Most transactions on Finstack are processed quickly, typically within minutes to a few hours depending on the type of exchange and verification requirements.",
+        "Finstack is perfect for anyone who needs to send money abroad, whether it’s families supporting loved ones, freelancers receiving international payments, or businesses handling cross-border transactions.",
     },
   ]
 
   return (
-    <section id="faq" className="py-20 px-4">
+    <section id="faq" className="py-20 px-4 relative overflow-hidden">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">Got questions? We've got answers.</h2>
-          <p className="text-xl text-muted-foreground">
-            Everything you need to know about getting started with Finstack
+          <div className="flex justify-center w-full">
+            <BlurText
+              text="Got questions? We've got answers."
+              delay={150}
+              animateBy="words"
+              direction="top"
+              className="text-4xl lg:text-5xl font-bold text-foreground mb-6 text-center"
+            />
+          </div>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Get quick answers to common questions about our service.
           </p>
         </div>
-
         <Accordion type="single" collapsible className="space-y-4">
           {faqs.map((faq, index) => (
             <AccordionItem key={index} value={`item-${index}`} className="border border-border rounded-lg px-6">
@@ -55,6 +63,10 @@ export function FAQSection() {
             Get Started Free
           </Button>
         </div>
+      </div>
+      {/* Decorative FAQ image bottom right */}
+      <div className="hidden md:block pointer-events-none absolute bottom-0 right-0 z-0 w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80">
+        <Image src="/faq.png" alt="FAQ Illustration" fill className="object-contain" />
       </div>
     </section>
   )

@@ -13,8 +13,9 @@ export function Navbar() {
         <div className="bg-white/80 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 shadow-lg">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center">
-              <img src="/imgs/logo.png" alt="Finstack logo" className="w-36 h-auto object-contain" />
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Finstack logo" className="w-8 h-8 object-contain" />
+              <span className="text-xl font-semibold text-foreground">Finstack</span>
             </div>
 
             {/* Desktop Navigation */}

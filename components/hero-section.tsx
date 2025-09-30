@@ -1,24 +1,34 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play } from "lucide-react"
+import { ArrowRight } from "lucide-react"
+import BlurText from "@/components/ui/blur-text"
 
 export function HeroSection() {
   return (
-    <section id="home" className="pt-32 pb-20 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+  <section id="home" className="relative pt-28 pb-12 md:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div className="absolute inset-0 w-full h-full">
+        <img src="/hero-background.png" alt="" className="w-full h-full object-cover" />
+      </div>
+      <div className="max-w-7xl mx-auto relative">
+  <div className="grid lg:grid-cols-2 gap-6 md:gap-12 items-start lg:items-center">
           {/* Left Content */}
-          <div className="space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance">
-                Move money without borders.
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed text-pretty">
-                Finstack makes global transfers simple, instant, and stress-free. Send money across countries at unbeatable
-                rates with security you can trust.
+          <div className="space-y-6 flex flex-col items-start text-left lg:items-start lg:text-left px-4 sm:px-6 lg:px-0">
+            <div className="space-y-4">
+              <BlurText
+                text="Move money without borders."
+                delay={150}
+                animateBy="words"
+                direction="top"
+                className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance"
+              />
+              <p className="text-sm md:text-base text-muted-foreground leading-snug text-pretty max-w-prose">
+                Finstack makes global transfers simple, instant, and stress-free. Send money across countries at
+                unbeatable rates with security you can trust.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 text-lg font-semibold flex items-center gap-2">
                 <ArrowRight size={20} />
                 Get Started
@@ -32,16 +42,14 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="relative">
-            <div className="relative mx-auto w-64 h-96 md:w-80 md:h-[500px]">
-              <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/5 rounded-3xl border border-primary/20 flex items-center justify-center">
-                <div className="text-center space-y-2">
-                  <div className="w-16 h-16 bg-primary/20 rounded-2xl mx-auto flex items-center justify-center">
-                    <span className="text-primary font-bold text-xl">📱</span>
-                  </div>
-                  <p className="text-muted-foreground text-sm">Mobile App Mockup</p>
-                </div>
-              </div>
+          <div className="relative flex justify-center lg:justify-end px-4 sm:px-6 lg:px-0">
+            <div className="relative mx-auto w-[260px] h-[420px] sm:w-[320px] sm:h-[480px] md:w-[480px] md:h-[640px] lg:w-[560px] lg:h-[760px] group">
+              <img
+                src="/hero.png"
+                alt="Finstack Mobile App Interface"
+                className="w-full h-full object-contain drop-shadow-2xl rounded-[40px] transition-all duration-300 group-hover:scale-105 group-hover:rotate-2"
+              />
+              <div className="absolute inset-0 rounded-[40px] bg-gradient-to-t from-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
           </div>
         </div>

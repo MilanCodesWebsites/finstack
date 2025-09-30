@@ -1,98 +1,96 @@
 import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight, Monitor, BarChart3, Users } from "lucide-react"
+import Image from "next/image"
+import BlurText from "@/components/ui/blur-text"
 
 export function GrowMoneySection() {
   return (
     <section className="py-20 px-4 bg-muted/30">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">Tools built for your growth.</h2>
-
-          {/* Navigation Arrows */}
-          
+        <div className="flex justify-between items-center mb-12">
+          <BlurText
+            text="Move Your Money Smarter"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl lg:text-6xl font-bold text-foreground"
+          />
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* One Dashboard, Total Control */}
-          <Card className="p-8 bg-white border-0 shadow-sm">
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-                <Monitor className="w-8 h-8 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  One Dashboard,
-                  <br />
-                  Total Control
-                </h3>
-                <p className="text-muted-foreground">
-                  Manage all your exchanges from a single, clean, browser-based dashboard.
-                </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Card - Seamless Transfers */}
+          <Card className="p-8 bg-white border-0 shadow-sm flex flex-col justify-between min-h-[400px]">
+            <div className="space-y-4">
+              <h3 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                Seamless
+                <br />
+                Transfers
+              </h3>
+              <p className="text-muted-foreground text-base leading-relaxed">
+                Send money across borders in minutes. No hidden fees, no long waits—just smooth, reliable transactions every time.
+              </p>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <div className="relative w-[80%] h-48">
+                <Image
+                  src="/transfer.png"
+                  alt="Seamless Transfers Illustration"
+                  width={400}
+                  height={200}
+                  className="object-contain"
+                />
               </div>
             </div>
           </Card>
 
-          {/* Live Market Insights */}
-          <Card className="p-8 bg-white border-0 shadow-sm">
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-                <BarChart3 className="w-8 h-8 text-primary" />
+          {/* Center Card - Real-Time Rates */}
+          <Card className="p-8 bg-white border-0 shadow-sm flex flex-col justify-between min-h-[400px]">
+            <div className="mb-8 flex justify-center">
+              <div className="relative w-[80%] h-48">
+                <Image
+                  src="/rates.png"
+                  alt="Real-Time Rates Illustration"
+                  width={400}
+                  height={200}
+                  className="object-contain"
+                />
               </div>
-              <div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  Live Market
-                  <br />
-                  Insights
-                </h3>
-                <p className="text-muted-foreground">
-                  Access transparent pricing and real-time updates to trade smarter.
-                </p>
-              </div>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                Real-Time
+                <br />
+                Rates
+              </h3>
+              <p className="text-muted-foreground text-base leading-relaxed">
+                Always get the best deal. Our system updates with live exchange rates, so you know exactly what you're sending and what your recipient gets.
+              </p>
             </div>
           </Card>
 
-          {/* Community You Can Trust */}
-          <Card className="p-8 bg-white border-0 shadow-sm">
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
-                <Users className="w-8 h-8 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  Community You
-                  <br />
-                  Can Trust
-                </h3>
-                <p className="text-muted-foreground">
-                  Every buyer and seller on Finstack is verified—so you can trade with confidence.
-                </p>
+          {/* Right Card - P2P Made Easy */}
+          <Card className="p-8 bg-white border-0 shadow-sm flex flex-col justify-between min-h-[400px]">
+            <div className="space-y-4">
+              <h3 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                P2P Made
+                <br />
+                Easy
+              </h3>
+              <p className="text-muted-foreground text-base leading-relaxed">
+                Transfer money directly between people anywhere in the world. Secure, instant, and built for modern users who need fast access.
+              </p>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <div className="relative w-[80%] h-48">
+                <Image
+                  src="/p2p.png"
+                  alt="P2P Transfer Illustration"
+                  width={400}
+                  height={200}
+                  className="object-contain"
+                />
               </div>
             </div>
           </Card>
-        </div>
-
-        {/* Money Illustration */}
-        <div className="mt-16 text-center">
-          <div className="relative inline-block">
-            <div className="w-80 h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl border border-primary/20 flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <div className="w-16 h-16 bg-primary/20 rounded-2xl mx-auto flex items-center justify-center">
-                  <span className="text-primary font-bold text-2xl">💰</span>
-                </div>
-                <p className="text-muted-foreground text-sm">Money Growth Illustration</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* User Testimonials */}
-        <div className="mt-16 flex justify-center">
-          <div className="flex -space-x-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="w-12 h-12 rounded-full bg-primary/20 border-4 border-white"></div>
-            ))}
-          </div>
         </div>
       </div>
     </section>
