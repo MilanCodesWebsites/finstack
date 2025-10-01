@@ -9,7 +9,7 @@ export function TestimonialsSection() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="flex justify-center -space-x-4 mb-8">
-            {["/memoji-01.png", "/memoji-02.png", "/memoji-03.png", "/memoji-04.png"].map(
+            {["/Memoji-01.png", "/Memoji-02.png", "/Memoji-03.png", "/Memoji-04.png"].map(
               (src, i) => (
                 <div
                   key={i}
@@ -52,63 +52,63 @@ export function TestimonialsSection() {
               text: "Finstack made sending money to family back home effortless and fast.",
               author: "Chinedu Okafor",
               role: "Entrepreneur",
-              img: "/memoji-05.png",
+              img: "/Memoji-05.png",
             },
             {
               rating: 5,
               text: "Excellent rates and a trustworthy platform for small businesses.",
               author: "Aisha Bello",
               role: "Small Business Owner",
-              img: "/memoji-06.png",
+              img: "/Memoji-06.png",
             },
             {
               rating: 5,
               text: "The verification was quick and support is always helpful.",
               author: "Ifeanyi Nnaji",
               role: "Freelancer",
-              img: "/memoji-07.png",
+              img: "/Memoji-07.png",
             },
             {
               rating: 5,
               text: "I trust Finstack for all my international transfers — seamless every time.",
               author: "Funke Adeyemi",
               role: "Trader",
-              img: "/memoji-08.png",
+              img: "/Memoji-08.png",
             },
             {
               rating: 5,
               text: "Great UX and clear fees. My business cashflow improved.",
               author: "Uchechi Eze",
               role: "Business Analyst",
-              img: "/memoji-09.png",
+              img: "/Memoji-09.png",
             },
             {
               rating: 5,
               text: "Fast, reliable, and secure — exactly what I needed.",
               author: "Emeka Obi",
               role: "Software Engineer",
-              img: "/memoji-10.png",
+              img: "/Memoji-10.png",
             },
             {
               rating: 5,
               text: "Customer service resolved my issue in minutes. Highly recommend.",
               author: "Zainab Musa",
               role: "Marketer",
-              img: "/memoji-11.png",
+              img: "/Memoji-11.png",
             },
             {
               rating: 5,
               text: "Transparent pricing and instant transfers have been a lifesaver.",
               author: "Tunde Balogun",
               role: "Consultant",
-              img: "/memoji-12.png",
+              img: "/Memoji-12.png",
             },
             {
               rating: 5,
               text: "I can now pay international suppliers without the usual headaches.",
               author: "Nneka Kalu",
               role: "Procurement Manager",
-              img: "/memoji-13.png",
+              img: "/Memoji-13.png",
             },
           ].map((review, index) => (
             <Card key={index} className="p-6 bg-white border-0 shadow-sm">
