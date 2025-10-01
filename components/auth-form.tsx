@@ -120,15 +120,11 @@ export function AuthForm() {
   return (
     <div className="w-full max-w-7xl mx-auto">
       <div className="grid lg:grid-cols-2 gap-0 bg-card rounded-none sm:rounded-2xl overflow-hidden shadow-2xl">
-        {/* Left side - Image */}
+        {/* Left side - Image (desktop) */}
         <div className="hidden lg:block relative bg-gradient-to-br from-primary/10 to-primary/5">
           <img
-            src={
-              mode === "login"
-                ? "/placeholder.svg?height=800&width=600&quality=80"
-                : "/placeholder.svg?height=800&width=600&quality=80"
-            }
-            alt={mode === "login" ? "Global transfers" : "User onboarding"}
+            src={mode === "login" ? "/login.png" : "/sign-up.png"}
+            alt={mode === "login" ? "Login illustration" : "Signup illustration"}
             className="w-full h-full object-cover"
             loading="lazy"
           />
@@ -136,7 +132,7 @@ export function AuthForm() {
         </div>
 
         {/* Right side - Form */}
-        <div className="p-4 sm:p-8 lg:p-16 flex flex-col justify-center mt-16 sm:mt-0">
+        <div className="p-4 sm:p-8 lg:p-16 flex flex-col justify-center mt-0 sm:mt-0">
           {/* Toggle Switch */}
           <div className="flex items-center justify-center gap-4 mb-8">
             <span className={`text-sm font-medium ${mode === "login" ? "text-foreground" : "text-muted-foreground"}`}>
