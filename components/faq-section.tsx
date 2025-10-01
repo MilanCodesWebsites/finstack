@@ -8,16 +8,17 @@ export function FAQSection() {
     {
       question: "What makes Finstack different from traditional money transfer services?",
       answer:
-        "Finstack eliminates hidden fees and slow transfers by offering seamless cross-border transactions with favorable exchange rates. It’s built to be faster, more transparent, and more affordable than traditional banks or remittance services.",
+        "Finstack eliminates hidden fees and slow transfers by offering seamless cross-border transactions with favorable exchange rates. It's built to be faster, more transparent, and more affordable than traditional banks or remittance services.",
     },
     {
       question: "Can I send money instantly with Finstack?",
-      answer: "Yes. Finstack is designed for real-time transactions, so your money moves across borders quickly, ensuring recipients get access without long delays.",
+      answer:
+        "Yes. Finstack is designed for real-time transactions, so your money moves across borders quickly, ensuring recipients get access without long delays.",
     },
     {
       question: "Does Finstack support P2P transfers?",
       answer:
-        "Absolutely. With Finstack’s peer-to-peer system, you can send and receive money directly from other users worldwide, making it easy to move funds between individuals without middlemen.",
+        "Absolutely. With Finstack's peer-to-peer system, you can send and receive money directly from other users worldwide, making it easy to move funds between individuals without middlemen.",
     },
     {
       question: "Is Finstack safe for international transfers?",
@@ -27,7 +28,7 @@ export function FAQSection() {
     {
       question: "Who should use Finstack?",
       answer:
-        "Finstack is perfect for anyone who needs to send money abroad, whether it’s families supporting loved ones, freelancers receiving international payments, or businesses handling cross-border transactions.",
+        "Finstack is perfect for anyone who needs to send money abroad, whether it's families supporting loved ones, freelancers receiving international payments, or businesses handling cross-border transactions.",
     },
   ]
 
@@ -35,15 +36,13 @@ export function FAQSection() {
     <section id="faq" className="py-20 px-4 relative overflow-hidden">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-16">
-          <div className="flex justify-center w-full">
-            <BlurText
-              text="Got questions? We've got answers."
-              delay={150}
-              animateBy="words"
-              direction="top"
-              className="text-4xl lg:text-5xl font-bold text-foreground mb-6 text-center"
-            />
-          </div>
+          <BlurText
+            text="Got questions? We've got answers."
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl lg:text-5xl font-bold text-foreground mb-6 text-center"
+          />
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Get quick answers to common questions about our service.
           </p>

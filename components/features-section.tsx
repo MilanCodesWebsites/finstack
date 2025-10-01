@@ -1,16 +1,14 @@
-import MagicBento from "@/components/magic-bento"
 import BlurText from "@/components/ui/blur-text"
+import MagicBento from "@/components/magic-bento"
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-12 md:py-20 px-4 bg-gray-900 overflow-x-hidden">
-      <div className="max-w-7xl mx-auto w-full">
+    <section id="features" className="py-12 md:py-20 bg-gray-900 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto w-full px-4">
         <div className="mb-8 md:mb-12">
           <div className="flex items-center gap-2 mb-6 md:mb-8">
             <span className="text-lg md:text-xl lg:text-2xl"></span>
-            <span className="text-gray-300 font-medium text-xs md:text-sm lg:text-base">
-              
-            </span>
+            <span className="text-gray-300 font-medium text-xs md:text-sm lg:text-base"></span>
             <span className="text-lg md:text-xl lg:text-2xl">🇺🇸</span>
           </div>
 
@@ -42,7 +40,7 @@ export function FeaturesSection() {
             enableTilt={true}
             enableMagnetism={true}
             clickEffect={true}
-            spotlightRadius={300}
+            spotlightRadius={250}
             particleCount={12}
             glowColor="47, 103, 250"
           />

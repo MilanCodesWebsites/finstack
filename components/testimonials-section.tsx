@@ -9,21 +9,23 @@ export function TestimonialsSection() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <div className="flex justify-center -space-x-4 mb-8">
-            {[
-              "/memoji/memoji-01.png",
-              "/memoji/memoji-02.png",
-              "/memoji/memoji-03.png",
-              "/memoji/memoji-04.png",
-            ].map((src, i) => (
-              <div
-                key={i}
-                className="w-16 h-16 rounded-full bg-primary/20 border-4 border-white flex items-center justify-center overflow-hidden"
-              >
-                <div className="relative w-14 h-14">
-                  <Image src={src} alt={`memoji-${i + 1}`} fill className="object-cover rounded-full" />
+            {["/memoji/memoji-01.png", "/memoji/memoji-02.png", "/memoji/memoji-03.png", "/memoji/memoji-04.png"].map(
+              (src, i) => (
+                <div
+                  key={i}
+                  className="w-16 h-16 rounded-full bg-primary/20 border-4 border-white flex items-center justify-center overflow-hidden"
+                >
+                  <div className="relative w-14 h-14">
+                    <Image
+                      src={src || "/placeholder.svg"}
+                      alt={`memoji-${i + 1}`}
+                      fill
+                      className="object-cover rounded-full"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
           <div className="flex justify-center w-full">
             <BlurText
@@ -118,7 +120,12 @@ export function TestimonialsSection() {
               <p className="text-muted-foreground mb-4 text-pretty">"{review.text}"</p>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-primary/20 overflow-hidden relative">
-                  <Image src={review.img} alt={review.author} fill className="object-cover rounded-full" />
+                  <Image
+                    src={review.img || "/placeholder.svg"}
+                    alt={review.author}
+                    fill
+                    className="object-cover rounded-full"
+                  />
                 </div>
                 <div>
                   <div className="font-semibold text-foreground">{review.author}</div>

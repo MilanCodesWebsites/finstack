@@ -6,13 +6,13 @@ export function GrowMoneySection() {
   return (
     <section className="py-20 px-4 bg-muted/30">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex justify-center items-center mb-12">
           <BlurText
             text="Move Your Money Smarter"
             delay={150}
             animateBy="words"
             direction="top"
-            className="text-4xl lg:text-6xl font-bold text-foreground"
+            className="text-4xl lg:text-6xl font-bold text-foreground text-center"
           />
         </div>
 
@@ -26,7 +26,8 @@ export function GrowMoneySection() {
                 Transfers
               </h3>
               <p className="text-muted-foreground text-base leading-relaxed">
-                Send money across borders in minutes. No hidden fees, no long waits—just smooth, reliable transactions every time.
+                Send money across borders in minutes. No hidden fees, no long waits—just smooth, reliable transactions
+                every time.
               </p>
             </div>
             <div className="mt-8 flex justify-center">
@@ -62,7 +63,8 @@ export function GrowMoneySection() {
                 Rates
               </h3>
               <p className="text-muted-foreground text-base leading-relaxed">
-                Always get the best deal. Our system updates with live exchange rates, so you know exactly what you're sending and what your recipient gets.
+                Always get the best deal. Our system updates with live exchange rates, so you know exactly what you're
+                sending and what your recipient gets.
               </p>
             </div>
           </Card>
@@ -76,7 +78,8 @@ export function GrowMoneySection() {
                 Easy
               </h3>
               <p className="text-muted-foreground text-base leading-relaxed">
-                Transfer money directly between people anywhere in the world. Secure, instant, and built for modern users who need fast access.
+                Transfer money directly between people anywhere in the world. Secure, instant, and built for modern
+                users who need fast access.
               </p>
             </div>
             <div className="mt-8 flex justify-center">

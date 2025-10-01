@@ -145,4 +145,59 @@
   .max-w-4xl {
     max-width: calc(100vw - 2rem);
   }
+
+  /* Added mobile font size adjustments for better readability */
+  @media (max-width: 768px) {
+    body {
+      @apply text-sm;
+    }
+
+    h1 {
+      @apply text-3xl;
+    }
+
+    h2 {
+      @apply text-2xl;
+    }
+
+    h3 {
+      @apply text-xl;
+    }
+
+    h4 {
+      @apply text-lg;
+    }
+
+    p {
+      @apply text-sm;
+    }
+
+    .text-lg {
+      @apply text-base;
+    }
+
+    .text-xl {
+      @apply text-lg;
+    }
+
+    .text-2xl {
+      @apply text-xl;
+    }
+
+    .text-3xl {
+      @apply text-2xl;
+    }
+
+    .text-4xl {
+      @apply text-3xl;
+    }
+
+    .text-5xl {
+      @apply text-4xl;
+    }
+
+    .text-6xl {
+      @apply text-5xl;
+    }
+  }
 }

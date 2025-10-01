@@ -29,21 +29,21 @@ export function HowItWorksSection() {
     <section id="how-it-works" className="py-20 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <div className="flex justify-center">
-            <BlurText
-              text="Three simple steps. Endless opportunities."
-              delay={150}
-              animateBy="words"
-              direction="top"
-              className="text-4xl lg:text-5xl font-bold text-foreground mb-6 text-balance text-center max-w-3xl mx-auto"
-            />
-          </div>
+          <BlurText
+            text="Three simple steps. Endless opportunities."
+            delay={150}
+            animateBy="words"
+            direction="top"
+            className="text-4xl lg:text-5xl font-bold text-foreground mb-6 text-balance text-center"
+          />
         </div>
 
         <div className="space-y-20">
           {steps.map((step, index) => (
             <div key={step.number} className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className={`space-y-6 flex flex-col items-center lg:items-start text-center lg:text-left ${index % 2 === 1 ? "lg:order-2" : ""}`}>
+              <div
+                className={`space-y-6 flex flex-col items-center lg:items-start text-center lg:text-left ${index % 2 === 1 ? "lg:order-2" : ""}`}
+              >
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
                     {step.number}
@@ -71,9 +71,7 @@ export function HowItWorksSection() {
                       {index === 1 && (
                         <Image src="/offer.png" alt="Offer" fill className="object-contain rounded-2xl" />
                       )}
-                      {index === 2 && (
-                        <Image src="/grow.png" alt="Grow" fill className="object-contain rounded-2xl" />
-                      )}
+                      {index === 2 && <Image src="/grow.png" alt="Grow" fill className="object-contain rounded-2xl" />}
                     </div>
                   </div>
                 </div>
