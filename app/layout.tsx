@@ -17,7 +17,12 @@ export const metadata: Metadata = {
   title: "Finstack - Move value with confidence",
   description:
     "Finstack is the secure web platform where you buy, sell, and exchange currencies and gift cards—fast, transparent, and built for growth.",
-  generator: "v0.app",
+  generator: "prince",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 }
 
 export default function RootLayout({
