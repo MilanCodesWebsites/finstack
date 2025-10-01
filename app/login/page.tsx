@@ -6,7 +6,9 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex flex-col">
       <Navbar />
-      <AuthForm />
+      <div className="pt-24">
+        <AuthForm />
+      </div>
       <Footer />
     </main>
   )
