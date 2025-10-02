@@ -1,6 +1,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import Link from "next/link"
 import BlurText from "@/components/ui/blur-text"
 
 export function FAQSection() {
@@ -58,8 +59,10 @@ export function FAQSection() {
 
         {/* CTA Button */}
         <div className="flex justify-center mt-12">
-          <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 text-lg font-semibold">
-            Get Started Free
+          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 text-lg font-semibold">
+            <Link href="/login">
+              Get Started Free
+            </Link>
           </Button>
         </div>
       </div>

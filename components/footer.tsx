@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Twitter, Linkedin, Instagram } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import BlurText from "@/components/ui/blur-text"
 
 export function Footer() {
@@ -10,7 +11,7 @@ export function Footer() {
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
           {/* Left Content */}
           <div className="space-y-8">
-            <div className="space-y-6">
+            <div className="space-y-6 text-center">
               <BlurText
                 text="Ready to move money smarter?"
                 delay={150}
@@ -18,15 +19,17 @@ export function Footer() {
                 direction="top"
                 className="text-4xl lg:text-5xl font-bold leading-tight text-balance"
               />
-              <p className="text-xl text-gray-300 leading-relaxed text-pretty">
+              <p className="text-xl text-gray-300 leading-relaxed text-pretty text-center">
                 Join thousands of users already sending and receiving money across the world with speed, security, and the best rates.
               </p>
             </div>
 
             {/* CTA Button */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 text-lg font-semibold">
-                Get Started Free
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-4 text-lg font-semibold">
+                <Link href="/login">
+                  Get Started Free
+                </Link>
               </Button>
             </div>
           </div>
@@ -34,11 +37,13 @@ export function Footer() {
           {/* Right Content - CTA Image */}
           <div className="relative flex justify-center items-center">
             <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96">
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black opacity-60 z-10 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-40 z-10 rounded-2xl"></div>
               <Image 
                 src="/cta-img.png" 
                 alt="CTA illustration" 
                 fill 
-                className="object-contain"
+                className="object-contain rounded-2xl"
                 priority
               />
             </div>
@@ -149,7 +154,10 @@ export function Footer() {
           {/* Copyright */}
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-800">
             <div className="flex items-center mb-4 md:mb-0">
-              <img src="/imgs/logo.webp" alt="Finstack logo" className="w-36 h-auto object-contain" />
+              <div className="flex items-center gap-2">
+                <img src="/logo.png" alt="Finstack logo" className="w-8 h-8 object-contain" />
+                <span className="text-xl font-semibold text-white">Finstack</span>
+              </div>
             </div>
             <p className="text-gray-400 text-sm">© 2025 Finstack. All rights reserved.</p>
           </div>
