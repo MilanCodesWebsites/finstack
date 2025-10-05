@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { Sidebar } from "@/components/dashboard/sidebar"
+import { Sidebar } from "@/components/dashboard/Sidebar"
 import { MobileDock } from "@/components/dashboard/mobile-dock"
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
