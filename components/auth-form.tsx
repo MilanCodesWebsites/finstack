@@ -3,10 +3,13 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Eye, EyeOff } from "lucide-react"
 
 type FormMode = "login" | "signup"
@@ -18,6 +21,8 @@ interface PasswordStrength {
 }
 
 export function AuthForm() {
+  const { toast } = useToast()
+  const router = useRouter()
   const [mode, setMode] = useState<FormMode>("login")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -28,11 +33,13 @@ export function AuthForm() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
+  const [referralSource, setReferralSource] = useState("")
 
   // Validation errors
   const [emailError, setEmailError] = useState("")
   const [passwordError, setPasswordError] = useState("")
   const [confirmPasswordError, setConfirmPasswordError] = useState("")
+  const [referralError, setReferralError] = useState("")
 
   const calculatePasswordStrength = (pwd: string): PasswordStrength => {
     let score = 0
@@ -96,25 +103,77 @@ export function AuthForm() {
     return true
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formError, setFormError] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormError("")
+    setLoading(true)
 
     const isEmailValid = validateEmail(email)
     const isPasswordValid = validatePassword(password)
 
     if (mode === "signup") {
       const isConfirmPasswordValid = validateConfirmPassword(confirmPassword)
+      let isReferralValid = true
+      if (!referralSource) {
+        setReferralError("Please tell us how you heard about us")
+        isReferralValid = false
+      } else {
+        setReferralError("")
+      }
 
-      if (isEmailValid && isPasswordValid && isConfirmPasswordValid && firstName && lastName) {
-        console.log("Signup form submitted", { firstName, lastName, email, password })
-        // Handle signup logic here
+      if (isEmailValid && isPasswordValid && isConfirmPasswordValid && firstName && lastName && isReferralValid) {
+        try {
+          const res = await fetch("/api/fstack/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firstName,
+              lastName,
+              email,
+              password,
+              howYouHeardAboutUs: referralSource,
+            }),
+          })
+          const data = await res.json()
+          if (res.ok) {
+            toast({
+              title: "Check your email",
+              description: "A verification link has been sent to your email. Please verify your account to continue.",
+              duration: 7000,
+            })
+            setTimeout(() => {
+              setMode("login")
+            }, 1200)
+          } else {
+            setFormError(data?.error || "Registration failed")
+          }
+        } catch (err: any) {
+          setFormError(err.message || "Registration failed")
+        }
       }
     } else {
       if (isEmailValid && isPasswordValid) {
-        console.log("Login form submitted", { email, password })
-        // Handle login logic here
+        try {
+          const res = await fetch("/api/fstack/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          })
+          const data = await res.json()
+          if (res.ok) {
+            router.push("/dashboard")
+          } else {
+            setFormError(data?.error || "Login failed")
+          }
+        } catch (err: any) {
+          setFormError(err.message || "Login failed")
+        }
       }
     }
+    setLoading(false)
   }
 
   return (
@@ -148,9 +207,11 @@ export function AuthForm() {
                 setConfirmPassword("")
                 setFirstName("")
                 setLastName("")
+                setReferralSource("")
                 setEmailError("")
                 setPasswordError("")
                 setConfirmPasswordError("")
+                setReferralError("")
               }}
               className="data-[state=checked]:bg-primary"
             />
@@ -195,6 +256,40 @@ export function AuthForm() {
                     className="h-12"
                   />
                 </div>
+              </div>
+            )}
+
+            {mode === "signup" && (
+              <div className="space-y-2">
+                <Label htmlFor="referralSource">How did you hear about us?</Label>
+                <Select
+                  value={referralSource}
+                  onValueChange={(v) => {
+                    setReferralSource(v)
+                    if (referralError) setReferralError("")
+                  }}
+                >
+                  <SelectTrigger id="referralSource" className={`w-full h-12 ${referralError ? "border-destructive" : ""}`}>
+                    <SelectValue placeholder="Select an option" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="google">Google / Search Engine</SelectItem>
+                    <SelectItem value="social-twitter">Twitter / X</SelectItem>
+                    <SelectItem value="social-instagram">Instagram</SelectItem>
+                    <SelectItem value="social-facebook">Facebook</SelectItem>
+                    <SelectItem value="social-linkedin">LinkedIn</SelectItem>
+                    <SelectItem value="friend-family">Friend or Family</SelectItem>
+                    <SelectItem value="online-ad">Online Ad</SelectItem>
+                    <SelectItem value="blog-article">Blog or Article</SelectItem>
+                    <SelectItem value="youtube-podcast">YouTube or Podcast</SelectItem>
+                    <SelectItem value="community-forum">Community or Forum</SelectItem>
+                    <SelectItem value="email-newsletter">Email Newsletter</SelectItem>
+                    <SelectItem value="event-webinar">Event or Webinar</SelectItem>
+                    <SelectItem value="app-store">App Store / Play Store</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                {referralError && <p className="text-sm text-destructive">{referralError}</p>}
               </div>
             )}
 
@@ -313,11 +408,13 @@ export function AuthForm() {
               </div>
             )}
 
+            {formError && <p className="text-sm text-destructive text-center">{formError}</p>}
             <Button
               type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground text-lg font-semibold"
+              disabled={loading}
             >
-              {mode === "login" ? "Sign In" : "Create Account"}
+              {loading ? (mode === "login" ? "Signing In..." : "Creating Account...") : (mode === "login" ? "Sign In" : "Create Account")}
             </Button>
           </form>
 

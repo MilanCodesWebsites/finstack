@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Manrope } from "next/font/google"
-import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 import { Suspense } from "react"
 import { PageTransition } from "@/components/page-transition"
@@ -32,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${manrope.variable} ${GeistMono.variable} overflow-x-hidden`}>
+      <body className={`font-sans ${manrope.variable} overflow-x-hidden`}>
         <Suspense fallback={<LoadingScreen />}>
           <PageTransition>{children}</PageTransition>
         </Suspense>
