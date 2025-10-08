@@ -48,6 +48,7 @@
     "framer-motion": "latest",
     "geist": "latest",
     "gsap": "latest",
+    "html2canvas": "^1.4.1",
     "input-otp": "latest",
     "jspdf": "^3.0.3",
     "lucide-react": "^0.454.0",

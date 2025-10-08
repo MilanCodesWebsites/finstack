@@ -11,23 +11,70 @@ import { convertCurrency } from "@/lib/mock-api"
 
 const steps = [
   { number: 1, title: "Select Wallet" },
-  { number: 2, title: "Deposit Details" },
+  { number: 2, title: "Select Network" },
+  { number: 3, title: "Deposit Details" },
 ]
+
+type ChainType = "TRC20" | "ETH" | "BEP20" | "SOLANA"
 
 export default function DepositPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedWallet, setSelectedWallet] = useState<"NGN" | "USDT" | null>(null)
+  const [selectedChain, setSelectedChain] = useState<ChainType | null>(null)
   const [copiedAddress, setCopiedAddress] = useState(false)
   const [copiedAccount, setCopiedAccount] = useState(false)
 
   const handleContinue = () => {
     if (!selectedWallet) return
-    setCurrentStep(2)
+    if (selectedWallet === "NGN") {
+      setCurrentStep(3) // Skip chain selection for NGN
+    } else {
+      setCurrentStep(2) // Go to chain selection for USDT
+    }
+  }
+
+  const handleChainContinue = () => {
+    if (!selectedChain) return
+    setCurrentStep(3)
+  }
+
+  // Chain-specific wallet addresses
+  const walletAddresses = {
+    TRC20: "TN3W4H6rK5oEKMQmHyFa5qfnHgWtEHtR8r",
+    ETH: "0x742d35Cc6634C0532925a3b8D400E29Fd2e2134f",
+    BEP20: "0x742d35Cc6634C0532925a3b8D400E29Fd2e2134f",
+    SOLANA: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+  }
+
+  const chainInfo = {
+    TRC20: {
+      name: "TRC20 (Tron)",
+      description: "Tron network - Lowest fees",
+      minDeposit: "10 USDT",
+      icon: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/bafb177a-43b9-4844-84a6-35b50af92dac-tron.png"
+    },
+    ETH: {
+      name: "ERC20 (Ethereum)",
+      description: "Ethereum network - Most secure",
+      minDeposit: "10 USDT",
+      icon: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/585842f7-a274-45fc-9c42-3ae9af5566bc-eth.png"
+    },
+    BEP20: {
+      name: "BEP20 (BSC)",
+      description: "Binance Smart Chain - Fast & cheap",
+      minDeposit: "10 USDT",
+      icon: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/478cc3b3-729c-430c-96a5-f21093f47d64-bnb.png"
+    },
+    SOLANA: {
+      name: "SPL (Solana)",
+      description: "Solana network - Ultra-fast",
+      minDeposit: "10 USDT",
+      icon: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/ad0f4c3d-7e06-4a31-b68e-1d8be218c5b0-solana.jpeg"
+    }
   }
 
   // Fixed deposit addresses
   const ngnAccountNumber = "123456789"
-  const usdtWalletAddress = "TN3W4H6rK5oEKMQmHyFa5qfnHgWtEHtR8r"
 
   const copyToClipboard = async (text: string, type: 'address' | 'account') => {
     try {
@@ -51,7 +98,15 @@ export default function DepositPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setCurrentStep(currentStep - 1)}
+            onClick={() => {
+              if (currentStep === 3 && selectedWallet === "USDT") {
+                setCurrentStep(2) // Go back to chain selection for USDT
+              } else if (currentStep === 3 && selectedWallet === "NGN") {
+                setCurrentStep(1) // Go back to wallet selection for NGN
+              } else {
+                setCurrentStep(currentStep - 1)
+              }
+            }}
             className="hover:bg-gray-100"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -139,8 +194,70 @@ export default function DepositPage() {
           </div>
         )}
 
-        {/* Step 2: Deposit Details */}
-        {currentStep === 2 && (
+        {/* Step 2: Select Chain (only for USDT) */}
+        {currentStep === 2 && selectedWallet === "USDT" && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-foreground mb-2">Select Network</h2>
+              <p className="text-gray-600">Choose the blockchain network for your USDT deposit</p>
+            </div>
+
+            <div className="grid gap-4">
+              {(Object.keys(chainInfo) as ChainType[]).map((chain) => {
+                const info = chainInfo[chain]
+                return (
+                  <button
+                    key={chain}
+                    onClick={() => setSelectedChain(chain)}
+                    className={`p-4 border-2 rounded-lg transition-all duration-200 text-left group ${
+                      selectedChain === chain 
+                        ? "border-[#2F67FA] bg-[#2F67FA]/5" 
+                        : "border-gray-200 hover:border-[#2F67FA] hover:bg-[#2F67FA]/5"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center overflow-hidden transition-colors ${
+                          selectedChain === chain
+                            ? "bg-[#2F67FA] border-2 border-[#2F67FA]"
+                            : "bg-white border-2 border-gray-200 group-hover:border-[#2F67FA]"
+                        }`}>
+                          <img 
+                            src={info.icon} 
+                            alt={chain} 
+                            className="w-8 h-8 object-cover rounded-full"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">{info.name}</h3>
+                          <p className="text-sm text-gray-600">{info.description}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">Min. deposit</p>
+                        <p className="text-sm font-medium text-foreground">{info.minDeposit}</p>
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            {selectedChain && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                <Button
+                  onClick={handleChainContinue}
+                  className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white"
+                >
+                  Continue
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 3: Deposit Details */}
+        {currentStep === 3 && (
           <div className="space-y-6">
             <div className="text-center">
               <div className="w-16 h-16 rounded-full bg-[#2F67FA]/10 flex items-center justify-center mx-auto mb-4">
@@ -156,7 +273,7 @@ export default function DepositPage() {
               <p className="text-gray-600">
                 {selectedWallet === "NGN" 
                   ? "Transfer funds to this 9PSB account number"
-                  : "Send USDT to this wallet address (TRC20 Network)"
+                  : `Send USDT to this wallet address (${selectedChain} Network)`
                 }
               </p>
             </div>
@@ -194,16 +311,16 @@ export default function DepositPage() {
                   <div className="space-y-4">
                     <div>
                       <Label className="text-sm font-medium text-gray-600">Network</Label>
-                      <p className="text-lg font-semibold text-foreground">TRC20 (Tron)</p>
+                      <p className="text-lg font-semibold text-foreground">{chainInfo[selectedChain!].name}</p>
                     </div>
                     <div>
                       <Label className="text-sm font-medium text-gray-600">Wallet Address</Label>
                       <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 mt-1">
-                        <span className="text-sm font-mono font-semibold text-foreground break-all">{usdtWalletAddress}</span>
+                        <span className="text-sm font-mono font-semibold text-foreground break-all">{walletAddresses[selectedChain!]}</span>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => copyToClipboard(usdtWalletAddress, 'address')}
+                          onClick={() => copyToClipboard(walletAddresses[selectedChain!], 'address')}
                           className="text-[#2F67FA] hover:bg-[#2F67FA]/10 ml-2 flex-shrink-0"
                         >
                           {copiedAddress ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -230,9 +347,10 @@ export default function DepositPage() {
                         </>
                       ) : (
                         <>
-                          <li>• Only send USDT on TRC20 network</li>
+                          <li>• Only send USDT on {selectedChain} network</li>
                           <li>• Do not send other cryptocurrencies to this address</li>
-                          <li>• Minimum deposit: 10 USDT</li>
+                          <li>• Minimum deposit: {chainInfo[selectedChain!].minDeposit}</li>
+                          <li>• Network fees apply as per blockchain standards</li>
                         </>
                       )}
                     </ul>
@@ -244,13 +362,18 @@ export default function DepositPage() {
             <div className="flex gap-3">
               <Button
                 onClick={() => {
-                  setCurrentStep(1)
-                  setSelectedWallet(null)
+                  if (selectedWallet === "NGN") {
+                    setCurrentStep(1)
+                    setSelectedWallet(null)
+                  } else {
+                    setCurrentStep(2)
+                    setSelectedChain(null)
+                  }
                 }}
                 variant="outline"
                 className="flex-1"
               >
-                Back to Wallets
+                {selectedWallet === "NGN" ? "Back to Wallets" : "Back to Networks"}
               </Button>
               <Button asChild className="flex-1 bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">
                 <a href="/dashboard">Go to Dashboard</a>

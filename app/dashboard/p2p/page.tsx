@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowRightLeft, Info, Star } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { convertCurrency } from "@/lib/mock-api"
+import { cn } from "@/lib/utils"
 
 const traders = [
   {
@@ -64,20 +65,74 @@ const currencies = [
     symbol: "$", 
     logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/ef95eebe-7923-4b32-87a6-d755b8caba30-usdt%20logo.png"
   },
-  { 
-    value: "GHS", 
-    label: "Ghanaian Cedi", 
-    symbol: "₵", 
-    logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/30e23345-0bc0-4165-8629-39eb5e1e8be6-cedits.png"
-  },
 ]
 
 export default function P2PPage() {
   const [fromCurrency, setFromCurrency] = useState("NGN")
   const [toCurrency, setToCurrency] = useState("USDT")
   const [amount, setAmount] = useState("1000")
+  const [liveRates, setLiveRates] = useState<{ [key: string]: number }>({})
+  const [loadingRates, setLoadingRates] = useState(true)
 
-  const convertedAmount = amount ? convertCurrency(Number.parseFloat(amount), fromCurrency, toCurrency) : 0
+  // Fetch live exchange rates
+  useEffect(() => {
+    const fetchLiveRates = async () => {
+      try {
+        setLoadingRates(true)
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD')
+        if (!response.ok) throw new Error('Failed to fetch rates')
+        
+        const data = await response.json()
+        
+        // Convert to our currency format
+        const rates = {
+          'NGN-USDT': 1 / data.rates.NGN, // NGN to USD (USDT)
+          'USDT-NGN': data.rates.NGN, // USD (USDT) to NGN
+          'RMB-USDT': 1 / data.rates.CNY, // CNY to USD
+          'USDT-RMB': data.rates.CNY, // USD to CNY
+          'NGN-RMB': data.rates.CNY / data.rates.NGN, // NGN to CNY
+          'RMB-NGN': data.rates.NGN / data.rates.CNY, // CNY to NGN
+        }
+        
+        setLiveRates(rates)
+      } catch (error) {
+        console.error('Failed to fetch live rates:', error)
+        // Fallback to mock rates if API fails
+        setLiveRates({
+          'NGN-USDT': 0.0006,
+          'USDT-NGN': 1650,
+          'RMB-USDT': 0.14,
+          'USDT-RMB': 7.2,
+          'NGN-RMB': 0.0043,
+          'RMB-NGN': 230,
+        })
+      } finally {
+        setLoadingRates(false)
+      }
+    }
+
+    fetchLiveRates()
+    // Refresh rates every 30 seconds
+    const interval = setInterval(fetchLiveRates, 30000)
+    
+    return () => clearInterval(interval)
+  }, [])
+
+  const convertedAmount = amount ? convertCurrencyWithLiveRates(Number.parseFloat(amount), fromCurrency, toCurrency, liveRates) : 0
+
+  function convertCurrencyWithLiveRates(amount: number, from: string, to: string, rates: { [key: string]: number }): number {
+    if (from === to) return amount
+    
+    const rateKey = `${from}-${to}`
+    const rate = rates[rateKey]
+    
+    if (rate) {
+      return amount * rate
+    }
+    
+    // Fallback to mock conversion if rate not found
+    return convertCurrency(amount, from, to)
+  }
 
   const handleSwap = () => {
     setFromCurrency(toCurrency)
@@ -89,13 +144,15 @@ export default function P2PPage() {
   }
 
   const getRate = () => {
+    if (loadingRates) return "Loading..."
     const rate = convertedAmount / (Number.parseFloat(amount) || 1)
-    return `1${fromCurrency} ≈ ${rate.toFixed(4)} ${toCurrency}`
+    return `1 ${fromCurrency} ≈ ${rate.toFixed(6)} ${toCurrency}`
   }
 
   const getUSDEquivalent = () => {
-    const usdAmount = convertCurrency(Number.parseFloat(amount) || 0, fromCurrency, "USDT")
-    return `≈ ${usdAmount.toFixed(5)} USDT`
+    if (loadingRates) return "Loading..."
+    const usdAmount = convertCurrencyWithLiveRates(Number.parseFloat(amount) || 0, fromCurrency, "USDT", liveRates)
+    return `≈ ${usdAmount.toFixed(6)} USDT`
   }
 
   return (
@@ -327,8 +384,17 @@ export default function P2PPage() {
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Info className="w-4 h-4" />
                   <span>Rate</span>
-                  <span className="ml-auto font-medium">{getRate()}</span>
+                  <div className="ml-auto flex items-center gap-2">
+                    <div className={cn(
+                      "w-2 h-2 rounded-full",
+                      loadingRates ? "bg-yellow-500 animate-pulse" : "bg-green-500"
+                    )} />
+                    <span className="font-medium">{getRate()}</span>
+                  </div>
                 </div>
+                <p className="text-xs text-gray-500 mt-1 text-right">
+                  {loadingRates ? "Updating rates..." : "Live rates • Updates every 30s"}
+                </p>
               </div>
 
               <div className="mt-6">

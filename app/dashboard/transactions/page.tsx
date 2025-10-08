@@ -4,8 +4,9 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Download, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Download, Search, ChevronLeft, ChevronRight, Receipt } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { TransactionReceiptModal } from "@/components/dashboard/transaction-receipt-modal"
 
 const allTransactions = [
   {
@@ -88,6 +89,20 @@ export default function TransactionsPage() {
   const [filterStatus, setFilterStatus] = useState("All")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 5
+  
+  // Receipt modal state
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
+  const [selectedTransaction, setSelectedTransaction] = useState<any>(null)
+  
+  const handleTransactionClick = (transaction: any) => {
+    setSelectedTransaction(transaction)
+    setIsReceiptModalOpen(true)
+  }
+  
+  const handleCloseReceiptModal = () => {
+    setIsReceiptModalOpen(false)
+    setSelectedTransaction(null)
+  }
 
   const filteredTransactions = allTransactions.filter((transaction) => {
     const matchesSearch =
@@ -199,21 +214,25 @@ export default function TransactionsPage() {
             </thead>
             <tbody>
               {paginatedTransactions.map((transaction) => (
-                <tr key={transaction.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                <tr 
+                  key={transaction.id} 
+                  onClick={() => handleTransactionClick(transaction)}
+                  className="border-b border-gray-100 hover:bg-blue-50/30 transition-colors cursor-pointer group"
+                >
                   <td className="py-4 px-2 text-sm text-gray-600">
                     {new Date(transaction.date).toLocaleDateString()}
                     <br />
                     <span className="text-xs text-gray-400">{new Date(transaction.date).toLocaleTimeString()}</span>
                   </td>
                   <td className="py-4 px-2">
-                    <span className="font-medium text-foreground">{transaction.type}</span>
+                    <span className="font-medium text-foreground group-hover:text-[#2F67FA] transition-colors">{transaction.type}</span>
                   </td>
                   <td className="py-4 px-2">
                     <span className="text-sm font-mono text-gray-600">{transaction.reference}</span>
                   </td>
                   <td className="py-4 px-2">
                     <span className="font-semibold text-foreground">
-                      {transaction.wallet === "NGN" ? "₦" : "$"}
+                      {transaction.wallet === "NGN" ? "₦" : transaction.wallet === "RMB" ? "¥" : "$"}
                       {transaction.amount.toLocaleString()}
                     </span>
                   </td>
@@ -221,11 +240,14 @@ export default function TransactionsPage() {
                     <span className="text-sm text-gray-600">{transaction.wallet}</span>
                   </td>
                   <td className="py-4 px-2">
-                    <span
-                      className={cn("text-xs px-2 py-1 rounded-full font-medium", getStatusColor(transaction.status))}
-                    >
-                      {transaction.status}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn("text-xs px-2 py-1 rounded-full font-medium", getStatusColor(transaction.status))}
+                      >
+                        {transaction.status}
+                      </span>
+                      <Receipt className="w-4 h-4 text-gray-400 group-hover:text-[#2F67FA] transition-colors" />
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -236,15 +258,22 @@ export default function TransactionsPage() {
         {/* Mobile Card View */}
         <div className="md:hidden space-y-3">
           {paginatedTransactions.map((transaction) => (
-            <div key={transaction.id} className="p-3 border border-gray-200 rounded-lg space-y-2 bg-white">
+            <div 
+              key={transaction.id} 
+              onClick={() => handleTransactionClick(transaction)}
+              className="p-3 border border-gray-200 rounded-lg space-y-2 bg-white hover:border-[#2F67FA] hover:bg-blue-50/30 transition-all duration-200 cursor-pointer group"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <p className="font-medium text-foreground text-sm">{transaction.type}</p>
+                  <p className="font-medium text-foreground text-sm group-hover:text-[#2F67FA] transition-colors">{transaction.type}</p>
                   <span className={cn("text-xs px-2 py-1 rounded-full font-medium", getStatusColor(transaction.status))}>
                     {transaction.status}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
+                  <Receipt className="w-4 h-4 text-gray-400 group-hover:text-[#2F67FA] transition-colors" />
+                </div>
               </div>
               
               <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
@@ -324,6 +353,13 @@ export default function TransactionsPage() {
           </div>
         )}
       </Card>
+      
+      {/* Receipt Modal */}
+      <TransactionReceiptModal
+        transaction={selectedTransaction}
+        isOpen={isReceiptModalOpen}
+        onClose={handleCloseReceiptModal}
+      />
     </div>
   )
 }
