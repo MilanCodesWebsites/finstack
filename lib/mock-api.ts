@@ -128,16 +128,18 @@ export const mockTransactions: Transaction[] = [
 
 // Mock exchange rates
 export const mockRates: ExchangeRate[] = [
-  { from: "NGN", to: "USD", rate: 0.0013 },
-  { from: "USD", to: "NGN", rate: 770 },
+  { from: "NGN", to: "RMB", rate: 0.0093 },
+  { from: "RMB", to: "NGN", rate: 107 },
+  { from: "NGN", to: "USDT", rate: 0.0013 },
+  { from: "USDT", to: "NGN", rate: 770 },
   { from: "NGN", to: "GHS", rate: 0.015 },
   { from: "GHS", to: "NGN", rate: 66.67 },
-  { from: "USD", to: "GHS", rate: 11.5 },
-  { from: "GHS", to: "USD", rate: 0.087 },
-  { from: "USDT", to: "NGN", rate: 770 },
-  { from: "NGN", to: "USDT", rate: 0.0013 },
-  { from: "RMB", to: "NGN", rate: 107 },
-  { from: "NGN", to: "RMB", rate: 0.0093 },
+  { from: "RMB", to: "USDT", rate: 0.14 },
+  { from: "USDT", to: "RMB", rate: 7.14 },
+  { from: "RMB", to: "GHS", rate: 1.61 },
+  { from: "GHS", to: "RMB", rate: 0.62 },
+  { from: "USDT", to: "GHS", rate: 11.5 },
+  { from: "GHS", to: "USDT", rate: 0.087 },
 ]
 
 // Mock P2P offers
