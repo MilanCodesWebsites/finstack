@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
         <div className="animate-pulse">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {[...Array(5)].map((_, i) => (
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
+      <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
       {data && (
         <>
           <StatsCards data={data} />

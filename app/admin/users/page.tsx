@@ -97,7 +97,7 @@ export default function UsersPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Users Management</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Users Management</h1>
         <div className="animate-pulse bg-gray-200 h-64 rounded-lg"></div>
       </div>
     );
@@ -105,9 +105,9 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Users Management</h1>
-        <div className="text-sm text-gray-600">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Users Management</h1>
+        <div className="text-xs md:text-sm text-gray-600">
           {filteredUsers.length} of {users.length} users
         </div>
       </div>

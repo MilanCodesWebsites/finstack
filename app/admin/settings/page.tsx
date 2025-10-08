@@ -60,7 +60,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
+        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Settings</h1>
         <div className="animate-pulse bg-gray-200 h-64 rounded-lg"></div>
       </div>
     );
@@ -68,7 +68,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
+      <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Settings</h1>
       
       <div className="max-w-2xl">
         {settings && (
