@@ -7,11 +7,11 @@ export default async function WalletsPage() {
   return (
     <div className="space-y-6">
       <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-        <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">My Wallets</h1>
-        <p className="text-gray-600">Manage your NGN and USDT wallets</p>
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-2">My Wallets</h1>
+        <p className="text-sm md:text-base text-gray-600">Manage your NGN and USDT wallets</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+      <div className="grid md:grid-cols-2 gap-4 md:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
         {wallets.map((wallet) => (
           <WalletCard key={wallet.type} wallet={wallet} />
         ))}
