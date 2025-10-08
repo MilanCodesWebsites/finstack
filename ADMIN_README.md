@@ -22,8 +22,7 @@ A clean, modern admin dashboard for the Finstack money transfer platform.
 Add these to your `.env.local` file:
 
 ```env
-ADMIN_EMAIL=admin@usefinstack.co
-ADMIN_PASSWORD=YourSecurePasswordHere
+stored in vercel
 ```
 
 ## Routes
@@ -88,4 +87,5 @@ Currently uses mock data for demonstration. Replace API calls in the route handl
 - Use HTTPS in production
 - Consider implementing 2FA for additional security
 - Regularly audit admin access logs
+
 - Use strong, unique passwords
