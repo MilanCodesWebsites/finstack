@@ -4,9 +4,9 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowRightLeft, Star } from "lucide-react"
+import { ArrowRightLeft, Info, Star } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { convertCurrency } from "@/lib/mock-api"
 
 const traders = [
@@ -45,10 +45,37 @@ const traders = [
   },
 ]
 
+const currencies = [
+  { 
+    value: "NGN", 
+    label: "Nigerian Naira", 
+    symbol: "₦", 
+    logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/f0f01069-7e35-4291-8664-af625c9c9623-nigeria-logo.png"
+  },
+  { 
+    value: "RMB", 
+    label: "Chinese Yuan", 
+    symbol: "¥", 
+    logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/a0e173f8-1f7d-4317-bead-1182d677213c-rmb.png"
+  },
+  { 
+    value: "USDT", 
+    label: "Tether", 
+    symbol: "$", 
+    logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/ef95eebe-7923-4b32-87a6-d755b8caba30-usdt%20logo.png"
+  },
+  { 
+    value: "GHS", 
+    label: "Ghanaian Cedi", 
+    symbol: "₵", 
+    logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/30e23345-0bc0-4165-8629-39eb5e1e8be6-cedits.png"
+  },
+]
+
 export default function P2PPage() {
   const [fromCurrency, setFromCurrency] = useState("NGN")
   const [toCurrency, setToCurrency] = useState("USDT")
-  const [amount, setAmount] = useState("")
+  const [amount, setAmount] = useState("1000")
 
   const convertedAmount = amount ? convertCurrency(Number.parseFloat(amount), fromCurrency, toCurrency) : 0
 
@@ -57,289 +84,258 @@ export default function P2PPage() {
     setToCurrency(fromCurrency)
   }
 
+  const getBalance = (currency: string) => {
+    return "-- " + currency
+  }
+
+  const getRate = () => {
+    const rate = convertedAmount / (Number.parseFloat(amount) || 1)
+    return `1${fromCurrency} ≈ ${rate.toFixed(4)} ${toCurrency}`
+  }
+
+  const getUSDEquivalent = () => {
+    const usdAmount = convertCurrency(Number.parseFloat(amount) || 0, fromCurrency, "USDT")
+    return `≈ ${usdAmount.toFixed(5)} USDT`
+  }
+
   return (
     <div className="space-y-6">
-      <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-        <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">P2P Trading</h1>
-        <p className="text-gray-600">Buy and sell crypto directly with other users</p>
+      <div className="flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground">P2P Trading</h1>
+          <p className="text-gray-600">Trade directly with other users</p>
+        </div>
       </div>
 
-      <Tabs defaultValue="buy" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
+      <Tabs defaultValue="buy" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="buy">Buy</TabsTrigger>
           <TabsTrigger value="sell">Sell</TabsTrigger>
           <TabsTrigger value="swap">Swap</TabsTrigger>
         </TabsList>
 
         <TabsContent value="buy" className="space-y-6 mt-6">
-          <Card className="p-6 shadow-lg border-gray-200">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Buy USDT</h3>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Trader</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Price</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Limits</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Payment</th>
-                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-600">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {traders.map((trader) => (
-                    <tr key={trader.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-2">
-                        <div>
-                          <p className="font-medium text-foreground">{trader.name}</p>
-                          <div className="flex items-center gap-1 mt-1">
-                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs text-gray-600">
-                              {trader.rating} ({trader.trades} trades)
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-2">
-                        <p className="font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
-                        <p className="text-xs text-gray-600">per USDT</p>
-                      </td>
-                      <td className="py-4 px-2">
-                        <p className="text-sm text-gray-600">
-                          ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
-                        </p>
-                      </td>
-                      <td className="py-4 px-2">
-                        <div className="flex flex-wrap gap-1">
-                          {trader.paymentMethods.map((method) => (
-                            <span
-                              key={method}
-                              className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap"
-                            >
-                              {method}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="py-4 px-2 text-right">
-                        <Button size="sm" className="bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">
-                          Buy
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile View */}
-            <div className="md:hidden space-y-4 mt-4">
-              {traders.map((trader) => (
-                <div key={trader.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
-                  <div className="flex items-center justify-between">
+          <Card className="shadow-lg border-gray-200">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Buy USDT</h3>
+              <div className="space-y-4">
+                {traders.map((trader) => (
+                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 p-4 border border-gray-200 rounded-lg hover:border-[#2F67FA] transition-colors">
                     <div>
-                      <p className="font-medium text-foreground">{trader.name}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs text-gray-600">
-                          {trader.rating} ({trader.trades} trades)
-                        </span>
+                      <p className="text-xs text-gray-600 mb-1">Trader</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-foreground">{trader.name}</p>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <span className="text-xs text-gray-600">{trader.rating}</span>
+                        </div>
                       </div>
+                      <p className="text-xs text-gray-600">{trader.trades} trades</p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Price</p>
+                      <p className="text-lg font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
                       <p className="text-xs text-gray-600">per USDT</p>
                     </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 mb-1">Limits</p>
-                    <p className="text-sm text-foreground">
-                      ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 mb-1">Payment Methods</p>
-                    <div className="flex flex-wrap gap-1">
-                      {trader.paymentMethods.map((method) => (
-                        <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
-                          {method}
-                        </span>
-                      ))}
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Limits</p>
+                      <p className="text-sm text-foreground">
+                        ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
+                      </p>
                     </div>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Payment Methods</p>
+                      <div className="flex flex-wrap gap-1">
+                        {trader.paymentMethods.map((method) => (
+                          <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
+                            {method}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <Button className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">Buy</Button>
                   </div>
-                  <Button className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">Buy</Button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </Card>
         </TabsContent>
 
         <TabsContent value="sell" className="space-y-6 mt-6">
-          <Card className="p-6 shadow-lg border-gray-200">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Sell USDT</h3>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Trader</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Price</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Limits</th>
-                    <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">Payment</th>
-                    <th className="text-right py-3 px-2 text-sm font-medium text-gray-600">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {traders.map((trader) => (
-                    <tr key={trader.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-2">
-                        <div>
-                          <p className="font-medium text-foreground">{trader.name}</p>
-                          <div className="flex items-center gap-1 mt-1">
-                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs text-gray-600">
-                              {trader.rating} ({trader.trades} trades)
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-2">
-                        <p className="font-semibold text-foreground">₦{(trader.price - 10).toLocaleString()}</p>
-                        <p className="text-xs text-gray-600">per USDT</p>
-                      </td>
-                      <td className="py-4 px-2">
-                        <p className="text-sm text-gray-600">
-                          ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
-                        </p>
-                      </td>
-                      <td className="py-4 px-2">
-                        <div className="flex flex-wrap gap-1">
-                          {trader.paymentMethods.map((method) => (
-                            <span
-                              key={method}
-                              className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full whitespace-nowrap"
-                            >
-                              {method}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="py-4 px-2 text-right">
-                        <Button size="sm" className="bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">
-                          Sell
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile View */}
-            <div className="md:hidden space-y-4 mt-4">
-              {traders.map((trader) => (
-                <div key={trader.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
-                  <div className="flex items-center justify-between">
+          <Card className="shadow-lg border-gray-200">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Sell USDT</h3>
+              <div className="space-y-4">
+                {traders.map((trader) => (
+                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 p-4 border border-gray-200 rounded-lg hover:border-[#2F67FA] transition-colors">
                     <div>
-                      <p className="font-medium text-foreground">{trader.name}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs text-gray-600">
-                          {trader.rating} ({trader.trades} trades)
-                        </span>
+                      <p className="text-xs text-gray-600 mb-1">Trader</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-foreground">{trader.name}</p>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <span className="text-xs text-gray-600">{trader.rating}</span>
+                        </div>
                       </div>
+                      <p className="text-xs text-gray-600">{trader.trades} trades</p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-foreground">₦{(trader.price - 10).toLocaleString()}</p>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Price</p>
+                      <p className="text-lg font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
                       <p className="text-xs text-gray-600">per USDT</p>
                     </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 mb-1">Limits</p>
-                    <p className="text-sm text-foreground">
-                      ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 mb-1">Payment Methods</p>
-                    <div className="flex flex-wrap gap-1">
-                      {trader.paymentMethods.map((method) => (
-                        <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
-                          {method}
-                        </span>
-                      ))}
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Limits</p>
+                      <p className="text-sm text-foreground">
+                        ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
+                      </p>
                     </div>
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">Payment Methods</p>
+                      <div className="flex flex-wrap gap-1">
+                        {trader.paymentMethods.map((method) => (
+                          <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
+                            {method}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <Button className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">Sell</Button>
                   </div>
-                  <Button className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">Sell</Button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </Card>
         </TabsContent>
 
         <TabsContent value="swap" className="space-y-6 mt-6">
-          <Card className="max-w-md mx-auto p-6 shadow-lg border-gray-200">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Currency Swap</h3>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="from-amount">From</Label>
-                <div className="flex gap-2">
-                  <select
-                    value={fromCurrency}
-                    onChange={(e) => setFromCurrency(e.target.value)}
-                    className="px-3 py-2 border border-gray-200 rounded-md bg-white text-sm font-medium text-foreground"
-                  >
-                    <option value="NGN">NGN</option>
-                    <option value="USD">USD</option>
-                    <option value="USDT">USDT</option>
-                    <option value="GHS">GHS</option>
-                  </select>
-                  <Input
-                    id="from-amount"
-                    type="number"
-                    placeholder="0.00"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="flex-1"
-                  />
+          <Card className="max-w-md mx-auto shadow-lg border-0 bg-white">
+            <div className="p-6">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Currency Converter</h3>
+                  <p className="text-gray-600">Real-time exchange rates</p>
                 </div>
-              </div>
 
-              <div className="flex justify-center">
-                <button
-                  onClick={handleSwap}
-                  className="w-10 h-10 rounded-full bg-gray-100 hover:bg-[#2F67FA] hover:text-white transition-all duration-200 flex items-center justify-center group"
-                >
-                  <ArrowRightLeft className="w-5 h-5 transition-transform duration-200 group-hover:rotate-180" />
-                </button>
-              </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">From</span>
+                    <span className="text-sm text-gray-500">Balance: {getBalance(fromCurrency)}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border">
+                    <div className="flex-1">
+                      <Input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="bg-transparent border-0 text-gray-900 text-xl font-semibold placeholder:text-gray-400 focus-visible:ring-0 p-0 h-auto"
+                        placeholder="0"
+                      />
+                      <div className="text-sm text-gray-500 mt-1">
+                        {getUSDEquivalent()}
+                      </div>
+                    </div>
+                    
+                    <Select value={fromCurrency} onValueChange={setFromCurrency}>
+                      <SelectTrigger className="w-auto bg-white border-gray-300 text-gray-900 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <img 
+                            src={currencies.find(c => c.value === fromCurrency)?.logo} 
+                            alt={fromCurrency}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                          <span className="font-medium">{fromCurrency}</span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencies.map((currency) => (
+                          <SelectItem key={currency.value} value={currency.value}>
+                            <div className="flex items-center gap-2">
+                              <img 
+                                src={currency.logo} 
+                                alt={currency.value}
+                                className="w-5 h-5 rounded-full object-cover"
+                              />
+                              <span>{currency.value}</span>
+                              <span className="text-gray-500 text-xs">- {currency.label}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="to-amount">To</Label>
-                <div className="flex gap-2">
-                  <select
-                    value={toCurrency}
-                    onChange={(e) => setToCurrency(e.target.value)}
-                    className="px-3 py-2 border border-gray-200 rounded-md bg-white text-sm font-medium text-foreground"
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleSwap}
+                    className="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 transition-all duration-200 flex items-center justify-center group"
                   >
-                    <option value="NGN">NGN</option>
-                    <option value="USD">USD</option>
-                    <option value="USDT">USDT</option>
-                    <option value="GHS">GHS</option>
-                  </select>
-                  <div className="flex-1 px-3 py-2 bg-gray-50 rounded-md border border-gray-200">
-                    <p className="text-sm font-medium text-foreground">
-                      {convertedAmount.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </p>
+                    <ArrowRightLeft className="w-4 h-4 text-white transition-transform duration-200 group-hover:rotate-180" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">To</span>
+                    <span className="text-sm text-gray-500">Balance: {getBalance(toCurrency)}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border">
+                    <div className="flex-1">
+                      <div className="text-xl font-semibold text-gray-900">
+                        {convertedAmount.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 6,
+                        })}
+                      </div>
+                    </div>
+                    
+                    <Select value={toCurrency} onValueChange={setToCurrency}>
+                      <SelectTrigger className="w-auto bg-white border-gray-300 text-gray-900 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <img 
+                            src={currencies.find(c => c.value === toCurrency)?.logo} 
+                            alt={toCurrency}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                          <span className="font-medium">{toCurrency}</span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencies.map((currency) => (
+                          <SelectItem key={currency.value} value={currency.value}>
+                            <div className="flex items-center gap-2">
+                              <img 
+                                src={currency.logo} 
+                                alt={currency.value}
+                                className="w-5 h-5 rounded-full object-cover"
+                              />
+                              <span>{currency.value}</span>
+                              <span className="text-gray-500 text-xs">- {currency.label}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
 
-              <Button className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white mt-4">Swap Now</Button>
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Info className="w-4 h-4" />
+                  <span>Rate</span>
+                  <span className="ml-auto font-medium">{getRate()}</span>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg">
+                  Convert Now
+                </Button>
+              </div>
             </div>
           </Card>
         </TabsContent>

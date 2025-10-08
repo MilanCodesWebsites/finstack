@@ -122,13 +122,13 @@ export default function TransactionsPage() {
   return (
     <div className="space-y-6">
       <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-        <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">Transaction History</h1>
-        <p className="text-gray-600">View and manage all your transactions</p>
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-2">Transaction History</h1>
+        <p className="text-sm md:text-base text-gray-600">View and manage all your transactions</p>
       </div>
 
-      <Card className="p-6 shadow-lg border-gray-200 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <Card className="p-4 md:p-6 shadow-lg border-gray-200 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex flex-col gap-4 mb-6">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
@@ -139,7 +139,7 @@ export default function TransactionsPage() {
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
@@ -166,9 +166,9 @@ export default function TransactionsPage() {
               size="sm"
               variant="outline"
               onClick={() => handleExport("pdf")}
-              className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA]"
+              className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA] text-xs md:text-sm"
             >
-              <Download className="w-4 h-4 mr-1" />
+              <Download className="w-3 h-3 md:w-4 md:h-4 mr-1" />
               PDF
             </Button>
 
@@ -176,9 +176,9 @@ export default function TransactionsPage() {
               size="sm"
               variant="outline"
               onClick={() => handleExport("csv")}
-              className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA]"
+              className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA] text-xs md:text-sm"
             >
-              <Download className="w-4 h-4 mr-1" />
+              <Download className="w-3 h-3 md:w-4 md:h-4 mr-1" />
               CSV
             </Button>
           </div>
@@ -234,29 +234,31 @@ export default function TransactionsPage() {
         </div>
 
         {/* Mobile Card View */}
-        <div className="md:hidden space-y-4">
+        <div className="md:hidden space-y-3">
           {paginatedTransactions.map((transaction) => (
-            <div key={transaction.id} className="p-4 border border-gray-200 rounded-lg space-y-3">
+            <div key={transaction.id} className="p-3 border border-gray-200 rounded-lg space-y-2 bg-white">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-foreground">{transaction.type}</p>
-                  <p className="text-xs text-gray-600 mt-1">{new Date(transaction.date).toLocaleDateString()}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-foreground text-sm">{transaction.type}</p>
+                  <span className={cn("text-xs px-2 py-1 rounded-full font-medium", getStatusColor(transaction.status))}>
+                    {transaction.status}
+                  </span>
                 </div>
-                <span className={cn("text-xs px-2 py-1 rounded-full font-medium", getStatusColor(transaction.status))}>
-                  {transaction.status}
-                </span>
+                <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString()}</p>
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+              
+              <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-100">
                 <div>
-                  <p className="text-xs text-gray-600 mb-1">Amount</p>
-                  <p className="font-semibold text-foreground">
+                  <p className="text-xs text-gray-500 mb-1">Amount</p>
+                  <p className="font-semibold text-foreground text-sm">
                     {transaction.wallet === "NGN" ? "₦" : "$"}
                     {transaction.amount.toLocaleString()}
                   </p>
+                  <p className="text-xs text-gray-500 mt-1">{transaction.wallet} Wallet</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-600 mb-1">Reference</p>
-                  <p className="text-xs font-mono text-gray-600">{transaction.reference}</p>
+                  <p className="text-xs text-gray-500 mb-1">Reference</p>
+                  <p className="text-xs font-mono text-gray-600 break-all">{transaction.reference}</p>
                 </div>
               </div>
             </div>
@@ -265,44 +267,56 @@ export default function TransactionsPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-gray-200">
+            <p className="text-sm text-gray-600 text-center md:text-left">
               Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredTransactions.length)} of{" "}
               {filteredTransactions.length} transactions
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-1 md:gap-2">
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA]"
+                className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA] px-2 md:px-3"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
               <div className="flex gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    size="sm"
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => setCurrentPage(page)}
-                    className={
-                      currentPage === page
-                        ? "bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white"
-                        : "text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA]"
-                    }
-                  >
-                    {page}
-                  </Button>
-                ))}
+                {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                  let page;
+                  if (totalPages <= 5) {
+                    page = i + 1;
+                  } else if (currentPage <= 3) {
+                    page = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    page = totalPages - 4 + i;
+                  } else {
+                    page = currentPage - 2 + i;
+                  }
+                  return (
+                    <Button
+                      key={page}
+                      size="sm"
+                      variant={currentPage === page ? "default" : "outline"}
+                      onClick={() => setCurrentPage(page)}
+                      className={
+                        currentPage === page
+                          ? "bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white px-2 md:px-3"
+                          : "text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA] px-2 md:px-3"
+                      }
+                    >
+                      {page}
+                    </Button>
+                  );
+                })}
               </div>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA]"
+                className="text-gray-600 hover:text-[#2F67FA] hover:border-[#2F67FA] px-2 md:px-3"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>

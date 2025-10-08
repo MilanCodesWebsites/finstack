@@ -1,16 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { SystemSettings } from '@/components/admin/SystemSettings';
 import { AnnouncementSettings } from '@/components/admin/AnnouncementSettings';
 
 interface Settings {
-  systemToggles: {
-    depositsEnabled: boolean;
-    withdrawalsEnabled: boolean;
-    p2pTransfersEnabled: boolean;
-    kycRequired: boolean;
-  };
   announcements: Array<{
     id: string;
     title: string;
@@ -77,24 +70,13 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          {settings && (
-            <SystemSettings 
-              settings={settings.systemToggles} 
-              onUpdate={updateSetting} 
-            />
-          )}
-        </div>
-        
-        <div>
-          {settings && (
-            <AnnouncementSettings 
-              announcements={settings.announcements}
-              onUpdate={updateSetting}
-            />
-          )}
-        </div>
+      <div className="max-w-2xl">
+        {settings && (
+          <AnnouncementSettings 
+            announcements={settings.announcements}
+            onUpdate={updateSetting}
+          />
+        )}
       </div>
     </div>
   );

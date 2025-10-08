@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Stepper } from "@/components/dashboard/stepper"
 import { OTPInput } from "@/components/dashboard/otp-input"
 import { AddAccountDialog } from "@/components/dashboard/add-account-dialog"
+import { AddWalletDialog } from "@/components/dashboard/add-wallet-dialog"
 import { ArrowLeft, Sparkles, Plus } from "lucide-react"
 import { convertCurrency } from "@/lib/mock-api"
 
@@ -25,8 +26,8 @@ const savedAccounts = [
 ]
 
 const savedWallets = [
-  { id: 1, name: "Binance Wallet", address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb" },
-  { id: 2, name: "Trust Wallet", address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063" },
+  { id: 1, name: "Binance Wallet", address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb", network: "TRC20" },
+  { id: 2, name: "Trust Wallet", address: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063", network: "ERC20" },
 ]
 
 export default function WithdrawPage() {
@@ -37,12 +38,24 @@ export default function WithdrawPage() {
 
   const handleAccountAdded = (account: { bankName: string; accountNumber: string; accountName: string }) => {
     // Add the new account to the saved accounts list
-    savedAccounts.push({
+    const newAccount = {
       id: savedAccounts.length + 1,
       name: account.accountName,
       accountNumber: account.accountNumber,
       bank: account.bankName,
-    })
+    }
+    savedAccounts.push(newAccount)
+  }
+
+  const handleWalletAdded = (wallet: { name: string; address: string; network: string }) => {
+    // Add the new wallet to the saved wallets list
+    const newWallet = {
+      id: savedWallets.length + 1,
+      name: wallet.name,
+      address: wallet.address,
+      network: wallet.network,
+    }
+    savedWallets.push(newWallet)
   }
 
   const fee = selectedWallet === "NGN" ? 50 : 1
@@ -151,10 +164,12 @@ export default function WithdrawPage() {
                   </button>
                 </AddAccountDialog>
               ) : (
-                <button className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2F67FA] hover:bg-[#2F67FA]/5 transition-all duration-200 flex items-center justify-center gap-2 text-gray-600 hover:text-[#2F67FA]">
-                  <Plus className="w-5 h-5" />
-                  <span className="font-medium">Add New Wallet</span>
-                </button>
+                <AddWalletDialog onWalletAdded={handleWalletAdded}>
+                  <button className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-[#2F67FA] hover:bg-[#2F67FA]/5 transition-all duration-200 flex items-center justify-center gap-2 text-gray-600 hover:text-[#2F67FA]">
+                    <Plus className="w-5 h-5" />
+                    <span className="font-medium">Add New Wallet</span>
+                  </button>
+                </AddWalletDialog>
               )}
             </div>
           </div>
