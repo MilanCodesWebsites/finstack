@@ -5,8 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { ArrowRightLeft, Info } from "lucide-react"
-import { convertCurrency } from "@/lib/mock-api"
+import { ArrowRightLeft, Info, RefreshCw } from "lucide-react"
 
 const currencies = [
   { 
@@ -27,12 +26,6 @@ const currencies = [
     symbol: "$", 
     logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/ef95eebe-7923-4b32-87a6-d755b8caba30-usdt%20logo.png"
   },
-  { 
-    value: "GHS", 
-    label: "Ghanaian Cedi", 
-    symbol: "₵", 
-    logo: "https://otiktpyazqotihijbwhm.supabase.co/storage/v1/object/public/images/30e23345-0bc0-4165-8629-39eb5e1e8be6-cedits.png"
-  },
 ]
 
 export function CurrencyConverter() {
@@ -40,12 +33,55 @@ export function CurrencyConverter() {
   const [toCurrency, setToCurrency] = useState("USDT")
   const [amount, setAmount] = useState("1000")
   const [convertedAmount, setConvertedAmount] = useState(0)
+  const [exchangeRates, setExchangeRates] = useState({
+    NGN: 1635, // USD to NGN
+    RMB: 7.24, // USD to RMB
+    USDT: 1    // USD to USDT
+  })
+  const [loading, setLoading] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+
+  // Fetch live exchange rates
+  const fetchLiveRates = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD')
+      const data = await response.json()
+      setExchangeRates({
+        NGN: data.rates.NGN,
+        RMB: data.rates.CNY, // Chinese Yuan in the API
+        USDT: 1
+      })
+      setLastUpdated(new Date())
+    } catch (error) {
+      console.error('Failed to fetch live rates:', error)
+      // Keep existing rates as fallback
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchLiveRates()
+    // Update every 5 minutes
+    const interval = setInterval(fetchLiveRates, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     const numAmount = Number.parseFloat(amount) || 0
-    const result = convertCurrency(numAmount, fromCurrency, toCurrency)
+    let result = 0
+
+    if (fromCurrency === toCurrency) {
+      result = numAmount
+    } else {
+      // Convert through USD
+      const amountInUSD = numAmount / exchangeRates[fromCurrency as keyof typeof exchangeRates]
+      result = amountInUSD * exchangeRates[toCurrency as keyof typeof exchangeRates]
+    }
+
     setConvertedAmount(result)
-  }, [amount, fromCurrency, toCurrency])
+  }, [amount, fromCurrency, toCurrency, exchangeRates])
 
   const handleSwap = () => {
     setFromCurrency(toCurrency)
@@ -56,18 +92,27 @@ export function CurrencyConverter() {
     if (currency === "NGN") return "-- NGN"
     if (currency === "USDT") return "-- USDT"
     if (currency === "RMB") return "-- RMB"
-    if (currency === "GHS") return "-- GHS"
     return "-- " + currency
   }
 
   const getRate = () => {
+    if (fromCurrency === toCurrency) return `1 ${fromCurrency} = 1 ${toCurrency}`
+    
     const rate = convertedAmount / (Number.parseFloat(amount) || 1)
-    return `1${fromCurrency} ≈ ${rate.toFixed(1)} ${toCurrency}`
+    const decimals = fromCurrency === "USDT" || toCurrency === "USDT" ? 6 : 2
+    return `1 ${fromCurrency} ≈ ${rate.toFixed(decimals)} ${toCurrency}`
   }
 
-  const getUSDEquivalent = () => {
-    const usdAmount = convertCurrency(Number.parseFloat(amount) || 0, fromCurrency, "USDT")
-    return `≈ ${usdAmount.toFixed(5)} USDT`
+  const getEquivalentValue = () => {
+    const amountNum = Number.parseFloat(amount) || 0
+    if (fromCurrency === "USDT") {
+      return `≈ ₦${(amountNum * exchangeRates.NGN).toLocaleString()}`
+    } else if (fromCurrency === "NGN") {
+      return `≈ $${(amountNum / exchangeRates.NGN).toFixed(2)}`
+    } else if (fromCurrency === "RMB") {
+      return `≈ $${(amountNum / exchangeRates.RMB).toFixed(2)}`
+    }
+    return ''
   }
 
   return (
@@ -76,8 +121,22 @@ export function CurrencyConverter() {
         <div className="space-y-6">
           {/* Header */}
           <div className="text-center">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Currency Converter</h3>
-            <p className="text-gray-600">Real-time exchange rates</p>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900">Currency Converter</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={fetchLiveRates}
+                disabled={loading}
+                className="h-6 w-6 p-0"
+              >
+                <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
+            <p className="text-gray-600">Live exchange rates</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
           </div>
 
           {/* From Currency */}
@@ -97,7 +156,7 @@ export function CurrencyConverter() {
                   placeholder="0"
                 />
                 <div className="text-sm text-gray-500 mt-1">
-                  {getUSDEquivalent()}
+                  {getEquivalentValue()}
                 </div>
               </div>
               

@@ -12,7 +12,7 @@ interface WalletBalanceCardProps {
 }
 
 export function WalletBalanceCard({ wallets }: WalletBalanceCardProps) {
-  const [selectedCurrency, setSelectedCurrency] = useState<"NGN" | "USD" | "GHS">("NGN")
+  const [selectedCurrency, setSelectedCurrency] = useState<"NGN" | "USD">("NGN")
   const [totalBalance, setTotalBalance] = useState(0)
   const [showBalance, setShowBalance] = useState(true)
 
@@ -26,8 +26,6 @@ export function WalletBalanceCard({ wallets }: WalletBalanceCardProps) {
         total += ngnWallet.balance
       } else if (selectedCurrency === "USD") {
         total += convertCurrency(ngnWallet.balance, "NGN", "USD")
-      } else {
-        total += convertCurrency(ngnWallet.balance, "NGN", "GHS")
       }
     }
     if (usdtWallet) {
@@ -35,9 +33,6 @@ export function WalletBalanceCard({ wallets }: WalletBalanceCardProps) {
         total += convertCurrency(usdtWallet.balance, "USDT", "NGN")
       } else if (selectedCurrency === "USD") {
         total += usdtWallet.balance
-      } else {
-        total += convertCurrency(usdtWallet.balance, "USDT", "NGN")
-        total = convertCurrency(total, "NGN", "GHS")
       }
     }
     setTotalBalance(total)
@@ -49,8 +44,6 @@ export function WalletBalanceCard({ wallets }: WalletBalanceCardProps) {
         return "₦"
       case "USD":
         return "$"
-      case "GHS":
-        return "₵"
     }
   }
 
@@ -104,7 +97,7 @@ export function WalletBalanceCard({ wallets }: WalletBalanceCardProps) {
         </div>
 
         <div className="flex gap-2">
-          {(["NGN", "USD", "GHS"] as const).map((currency) => (
+          {(["NGN", "USD"] as const).map((currency) => (
             <Button
               key={currency}
               size="sm"

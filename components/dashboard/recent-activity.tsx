@@ -1,11 +1,13 @@
 "use client"
 
+import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { ArrowRight, Download } from "lucide-react"
+import { ArrowRight, Download, Receipt } from "lucide-react"
 import type { Transaction } from "@/lib/mock-api"
 import { cn } from "@/lib/utils"
+import { TransactionReceiptModal } from "@/components/dashboard/transaction-receipt-modal"
 import jsPDF from "jspdf"
 import Papa from "papaparse"
 
@@ -14,6 +16,9 @@ interface RecentActivityProps {
 }
 
 export function RecentActivity({ transactions }: RecentActivityProps) {
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Completed":
@@ -25,6 +30,16 @@ export function RecentActivity({ transactions }: RecentActivityProps) {
       default:
         return "text-gray-600 bg-gray-50"
     }
+  }
+
+  const handleTransactionClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction)
+    setIsReceiptModalOpen(true)
+  }
+
+  const handleCloseReceiptModal = () => {
+    setIsReceiptModalOpen(false)
+    setSelectedTransaction(null)
   }
 
   const handleExportPDF = () => {
@@ -96,12 +111,15 @@ export function RecentActivity({ transactions }: RecentActivityProps) {
         {transactions.map((transaction) => (
           <div
             key={transaction.id}
-            className="p-3 md:p-4 rounded-lg border border-gray-200 hover:border-[#2F67FA] transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
+            onClick={() => handleTransactionClick(transaction)}
+            className="p-3 md:p-4 rounded-lg border border-gray-200 hover:border-[#2F67FA] hover:bg-blue-50/30 transition-all duration-200 cursor-pointer animate-in fade-in slide-in-from-bottom-2 group"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="font-medium text-foreground text-sm md:text-base">{transaction.type}</p>
+                  <p className="font-medium text-foreground text-sm md:text-base group-hover:text-[#2F67FA] transition-colors">
+                    {transaction.type}
+                  </p>
                   <span
                     className={cn(
                       "text-xs px-2 py-0.5 md:py-1 rounded-full font-medium",
@@ -115,12 +133,15 @@ export function RecentActivity({ transactions }: RecentActivityProps) {
                   {new Date(transaction.date).toLocaleDateString()} • {transaction.wallet}
                 </p>
               </div>
-              <div className="text-right">
-                <p className="font-semibold text-foreground text-sm md:text-base">
-                  {transaction.wallet === "NGN" ? "₦" : "$"}
-                  {transaction.amount.toLocaleString()}
-                </p>
-                <p className="text-xs text-gray-600">{transaction.reference}</p>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="font-semibold text-foreground text-sm md:text-base">
+                    {transaction.wallet === "NGN" ? "₦" : transaction.wallet === "USDT" ? "$" : "¥"}
+                    {transaction.amount.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-600">{transaction.reference}</p>
+                </div>
+                <Receipt className="w-4 h-4 text-gray-400 group-hover:text-[#2F67FA] transition-colors" />
               </div>
             </div>
           </div>
@@ -139,6 +160,13 @@ export function RecentActivity({ transactions }: RecentActivityProps) {
           </Link>
         </Button>
       </div>
+
+      {/* Receipt Modal */}
+      <TransactionReceiptModal
+        transaction={selectedTransaction}
+        isOpen={isReceiptModalOpen}
+        onClose={handleCloseReceiptModal}
+      />
     </Card>
   )
 }
