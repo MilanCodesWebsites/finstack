@@ -176,32 +176,36 @@ export default function P2PPage() {
             <div className="p-6">
               <h3 className="text-lg font-semibold text-foreground mb-4">Buy USDT</h3>
               <div className="space-y-4">
+                {/* Header for desktop */}
+                <div className="hidden md:grid md:grid-cols-6 gap-6 p-4 bg-gray-50 rounded-lg font-medium text-sm text-gray-700">
+                  <div>Trader</div>
+                  <div>Price</div>
+                  <div>Limits</div>
+                  <div>Payment Methods</div>
+                  <div>Rating</div>
+                  <div>Action</div>
+                </div>
+                
                 {traders.map((trader) => (
-                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 p-4 border border-gray-200 rounded-lg hover:border-[#2F67FA] transition-colors">
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Trader</p>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-foreground">{trader.name}</p>
-                        <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-xs text-gray-600">{trader.rating}</span>
-                        </div>
-                      </div>
+                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 md:gap-6 p-4 border border-gray-200 rounded-lg hover:border-green-400 transition-colors hover:shadow-md">
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Trader</p>
+                      <p className="font-medium text-foreground">{trader.name}</p>
                       <p className="text-xs text-gray-600">{trader.trades} trades</p>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Price</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Price</p>
                       <p className="text-lg font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
                       <p className="text-xs text-gray-600">per USDT</p>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Limits</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Limits</p>
                       <p className="text-sm text-foreground">
                         ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Payment Methods</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Payment Methods</p>
                       <div className="flex flex-wrap gap-1">
                         {trader.paymentMethods.map((method) => (
                           <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
@@ -210,7 +214,16 @@ export default function P2PPage() {
                         ))}
                       </div>
                     </div>
-                    <Button className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">Buy</Button>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Rating</p>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">{trader.rating}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Buy</Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -223,32 +236,36 @@ export default function P2PPage() {
             <div className="p-6">
               <h3 className="text-lg font-semibold text-foreground mb-4">Sell USDT</h3>
               <div className="space-y-4">
+                {/* Header for desktop */}
+                <div className="hidden md:grid md:grid-cols-6 gap-6 p-4 bg-gray-50 rounded-lg font-medium text-sm text-gray-700">
+                  <div>Trader</div>
+                  <div>Price</div>
+                  <div>Limits</div>
+                  <div>Payment Methods</div>
+                  <div>Rating</div>
+                  <div>Action</div>
+                </div>
+                
                 {traders.map((trader) => (
-                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 p-4 border border-gray-200 rounded-lg hover:border-[#2F67FA] transition-colors">
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Trader</p>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-foreground">{trader.name}</p>
-                        <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-xs text-gray-600">{trader.rating}</span>
-                        </div>
-                      </div>
+                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 md:gap-6 p-4 border border-gray-200 rounded-lg hover:border-red-400 transition-colors hover:shadow-md">
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Trader</p>
+                      <p className="font-medium text-foreground">{trader.name}</p>
                       <p className="text-xs text-gray-600">{trader.trades} trades</p>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Price</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Price</p>
                       <p className="text-lg font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
                       <p className="text-xs text-gray-600">per USDT</p>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Limits</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Limits</p>
                       <p className="text-sm text-foreground">
                         ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-600 mb-1">Payment Methods</p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Payment Methods</p>
                       <div className="flex flex-wrap gap-1">
                         {trader.paymentMethods.map((method) => (
                           <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
@@ -257,7 +274,16 @@ export default function P2PPage() {
                         ))}
                       </div>
                     </div>
-                    <Button className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">Sell</Button>
+                    <div className="space-y-1">
+                      <p className="text-xs text-gray-600 mb-1 md:hidden">Rating</p>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-medium">{trader.rating}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <Button className="w-full bg-red-600 hover:bg-red-700 text-white">Sell</Button>
+                    </div>
                   </div>
                 ))}
               </div>
