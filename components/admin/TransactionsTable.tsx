@@ -1,6 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 interface Transaction {
   id: string;
@@ -19,6 +23,18 @@ interface TransactionsTableProps {
 }
 
 export function TransactionsTable({ transactions }: TransactionsTableProps) {
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleTransactionClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedTransaction(null);
+  };
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -105,7 +121,11 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {transactions.map((transaction) => (
-              <tr key={transaction.id} className="hover:bg-gray-50">
+              <tr 
+                key={transaction.id} 
+                className="hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => handleTransactionClick(transaction)}
+              >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{transaction.id}</div>
                 </td>
@@ -145,6 +165,92 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Transaction Details Modal */}
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Transaction Details</DialogTitle>
+              <Button variant="ghost" size="icon" onClick={closeModal}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+          
+          {selectedTransaction && (
+            <div className="space-y-6">
+              {/* Transaction Overview */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-3">Transaction Overview</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Transaction ID</label>
+                    <p className="text-sm font-mono">{selectedTransaction.id}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Reference</label>
+                    <p className="text-sm font-mono">{selectedTransaction.reference}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Type</label>
+                    <Badge className={getTypeColor(selectedTransaction.type)}>
+                      {selectedTransaction.type}
+                    </Badge>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Status</label>
+                    <Badge className={getStatusColor(selectedTransaction.status)}>
+                      {selectedTransaction.status}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Amount & Currency */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-3">Amount Details</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Amount</label>
+                    <p className="text-xl font-bold text-gray-900">
+                      {formatCurrency(selectedTransaction.amount, selectedTransaction.currency)}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Currency</label>
+                    <p className="text-sm">{selectedTransaction.currency}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* User Information */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-3">User Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">User Name</label>
+                    <p className="text-sm">{selectedTransaction.user}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Email</label>
+                    <p className="text-sm">{selectedTransaction.userEmail}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Timestamp */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-3">Timestamp</h3>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Date & Time</label>
+                  <p className="text-sm">{formatDate(selectedTransaction.date)}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
