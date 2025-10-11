@@ -119,7 +119,49 @@ export default function TransactionsPage() {
           {filteredTransactions.length} of {transactions.length} transactions
         </div>
       </div>
-      
+
+      {/* Admin transaction summary (top) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm font-medium text-gray-500">Total Transactions</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{transactions.length}</p>
+          <p className="text-xs text-gray-400 mt-1">All time</p>
+        </div>
+
+        <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm font-medium text-gray-500">Total Volume (NGN)</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{
+            transactions
+              .filter(t => t.currency === 'NGN')
+              .reduce((sum, t) => sum + (typeof t.amount === 'number' ? t.amount : Number(t.amount) || 0), 0)
+              .toLocaleString()
+          }</p>
+          <p className="text-xs text-gray-400 mt-1">NGN equivalent across transactions</p>
+        </div>
+
+        <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm font-medium text-gray-500">P2P Revenue (NGN)</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{
+            // Calculate 1% commission on completed P2P trades in NGN
+            (transactions
+              .filter(t => t.type === 'P2P Trade' && t.status === 'Completed' && t.currency === 'NGN')
+              .reduce((sum, t) => sum + (typeof t.amount === 'number' ? t.amount : Number(t.amount) || 0), 0) * 0.01
+            ).toLocaleString()
+          }</p>
+          <p className="text-xs text-gray-400 mt-1">1% commission on completed P2P trades (NGN)</p>
+        </div>
+
+        <div className="p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <p className="text-sm font-medium text-gray-500">Success Rate</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{
+            transactions.length > 0
+              ? Math.round((transactions.filter(t => t.status === 'Completed').length / transactions.length) * 100) + '%'
+              : '—'
+          }</p>
+          <p className="text-xs text-gray-400 mt-1">{transactions.filter(t => t.status === 'Completed').length} completed</p>
+        </div>
+      </div>
+
       <TransactionsFilter 
         filters={filters} 
         onFiltersChange={setFilters}
