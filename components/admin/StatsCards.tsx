@@ -62,11 +62,11 @@ export function StatsCards({ data }: StatsCardsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
       {stats.map((stat) => (
-        <div key={stat.title} className="bg-white p-4 md:p-6 rounded-lg border border-gray-200 shadow-sm">
-          <h3 className="text-xs font-medium text-gray-500 mb-2">{stat.title}</h3>
-          <p className="text-lg md:text-xl font-semibold text-gray-900 mb-1">{stat.value}</p>
+        <div key={stat.title} className="bg-white p-3 sm:p-4 lg:p-6 rounded-lg border border-gray-200 shadow-sm min-w-0">
+          <h3 className="text-xs font-medium text-gray-500 mb-2 truncate">{stat.title}</h3>
+          <p className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-1 truncate">{stat.value}</p>
           <div className="flex items-center">
             {stat.trending === 'up' ? (
               <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-green-600 mr-1" />

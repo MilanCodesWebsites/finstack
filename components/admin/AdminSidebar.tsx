@@ -11,7 +11,10 @@ import {
   LogOut,
   Menu,
   X,
-  BookOpen
+  BookOpen,
+  AlertTriangle,
+  ArrowLeftRight,
+  Store
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +24,9 @@ const navigation = [
   { name: 'KYC Requests', href: '/admin/kyc', icon: FileCheck },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Transactions', href: '/admin/transactions', icon: CreditCard },
+  { name: 'P2P Orders', href: '/admin/p2p-orders', icon: ArrowLeftRight },
+  { name: 'Disputes', href: '/admin/disputes', icon: AlertTriangle },
+  { name: 'Merchants', href: '/admin/merchants', icon: Store },
   { name: 'Ledger', href: '/admin/ledger', icon: BookOpen },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];

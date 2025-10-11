@@ -92,7 +92,50 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-      <div className="overflow-x-auto">
+      {/* Mobile View */}
+      <div className="block md:hidden">
+        <div className="divide-y divide-gray-200">
+          {transactions.map((transaction) => (
+            <div
+              key={transaction.id}
+              className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+              onClick={() => handleTransactionClick(transaction)}
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{transaction.user}</p>
+                    <p className="text-xs text-gray-500">{transaction.userEmail}</p>
+                  </div>
+                  <Badge className={getStatusColor(transaction.status)}>
+                    {transaction.status}
+                  </Badge>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-gray-500">Amount</p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {formatCurrency(transaction.amount, transaction.currency)}
+                    </p>
+                  </div>
+                  <Badge className={getTypeColor(transaction.type)}>
+                    {transaction.type}
+                  </Badge>
+                </div>
+                
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>{formatDate(transaction.date)}</span>
+                  <span className="font-mono">{transaction.reference}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
