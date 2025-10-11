@@ -48,7 +48,7 @@ export default function AdminDashboard() {
       <div className="space-y-6">
         <h1 className="text-xl md:text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
         <div className="animate-pulse">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="bg-gray-200 h-24 rounded-lg"></div>
             ))}

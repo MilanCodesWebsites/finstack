@@ -64,16 +64,6 @@ export default function WithdrawPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-        {currentStep > 1 && currentStep < 5 && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setCurrentStep(currentStep - 1)}
-            className="hover:bg-gray-100"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        )}
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground">Withdraw Funds</h1>
           <p className="text-gray-600">Transfer money from your wallet</p>
@@ -126,6 +116,16 @@ export default function WithdrawPage() {
                 <p className="text-lg font-semibold text-foreground">$1,500.00</p>
               </button>
             </div>
+            
+            {/* Back button for step 1 */}
+            <Button
+              onClick={() => window.history.back()}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Button>
           </div>
         )}
 
@@ -172,6 +172,16 @@ export default function WithdrawPage() {
                 </AddWalletDialog>
               )}
             </div>
+            
+            {/* Add back button for step 2 */}
+            <Button
+              onClick={() => setCurrentStep(1)}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Button>
           </div>
         )}
 
@@ -234,13 +244,23 @@ export default function WithdrawPage() {
               )}
             </div>
 
-            <Button
-              onClick={() => setCurrentStep(4)}
-              disabled={!amount || Number.parseFloat(amount) <= 0}
-              className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white"
-            >
-              Continue
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setCurrentStep(2)}
+                variant="outline"
+                className="flex-1 flex items-center justify-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+              <Button
+                onClick={() => setCurrentStep(4)}
+                disabled={!amount || Number.parseFloat(amount) <= 0}
+                className="flex-1 bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white"
+              >
+                Continue
+              </Button>
+            </div>
           </div>
         )}
 
@@ -275,12 +295,22 @@ export default function WithdrawPage() {
               <button className="text-sm text-[#2F67FA] hover:text-[#2F67FA]/80 font-medium">Resend Code</button>
             </div>
 
-            <Button
-              onClick={() => setCurrentStep(5)}
-              className="w-full bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white"
-            >
-              Verify & Complete
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setCurrentStep(3)}
+                variant="outline"
+                className="flex-1 flex items-center justify-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+              </Button>
+              <Button
+                onClick={() => setCurrentStep(5)}
+                className="flex-1 bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white"
+              >
+                Verify & Complete
+              </Button>
+            </div>
           </div>
         )}
 
@@ -306,16 +336,12 @@ export default function WithdrawPage() {
 
             <div className="flex gap-3">
               <Button
-                onClick={() => {
-                  setCurrentStep(1)
-                  setSelectedWallet(null)
-                  setAmount("")
-                  setSelectedDestination(null)
-                }}
+                onClick={() => window.history.back()}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 flex items-center justify-center gap-2"
               >
-                Make Another Withdrawal
+                <ArrowLeft className="w-4 h-4" />
+                Back
               </Button>
               <Button asChild className="flex-1 bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">
                 <a href="/dashboard">Go to Dashboard</a>

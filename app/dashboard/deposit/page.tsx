@@ -94,24 +94,6 @@ export default function DepositPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-        {currentStep > 1 && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              if (currentStep === 3 && selectedWallet === "USDT") {
-                setCurrentStep(2) // Go back to chain selection for USDT
-              } else if (currentStep === 3 && selectedWallet === "NGN") {
-                setCurrentStep(1) // Go back to wallet selection for NGN
-              } else {
-                setCurrentStep(currentStep - 1)
-              }
-            }}
-            className="hover:bg-gray-100"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        )}
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground">Deposit Funds</h1>
           <p className="text-gray-600">Add money to your wallet</p>
@@ -191,6 +173,16 @@ export default function DepositPage() {
                 </Button>
               </div>
             )}
+            
+            {/* Back button for step 1 */}
+            <Button
+              onClick={() => window.history.back()}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Button>
           </div>
         )}
 
@@ -253,6 +245,16 @@ export default function DepositPage() {
                 </Button>
               </div>
             )}
+            
+            {/* Back button for step 2 */}
+            <Button
+              onClick={() => setCurrentStep(1)}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Button>
           </div>
         )}
 
@@ -364,16 +366,15 @@ export default function DepositPage() {
                 onClick={() => {
                   if (selectedWallet === "NGN") {
                     setCurrentStep(1)
-                    setSelectedWallet(null)
                   } else {
                     setCurrentStep(2)
-                    setSelectedChain(null)
                   }
                 }}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 flex items-center justify-center gap-2"
               >
-                {selectedWallet === "NGN" ? "Back to Wallets" : "Back to Networks"}
+                <ArrowLeft className="w-4 h-4" />
+                Back
               </Button>
               <Button asChild className="flex-1 bg-[#2F67FA] hover:bg-[#2F67FA]/90 text-white">
                 <a href="/dashboard">Go to Dashboard</a>
