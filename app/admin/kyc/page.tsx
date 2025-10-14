@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { KYCRequestsTable } from '@/components/admin/KYCRequestsTable';
+// import { KYCRequestsTable } from '@/components/admin/KYCRequestsTable';
+import { KYCOverview } from '@/components/admin/KYCOverview';
 
 interface KYCRequest {
   id: string;
@@ -11,6 +12,9 @@ interface KYCRequest {
   documents: string[];
   submittedAt: string;
   status: string;
+  phone?: string;
+  address?: string;
+  documentType?: string;
 }
 
 export default function KYCPage() {
@@ -35,20 +39,33 @@ export default function KYCPage() {
     fetchRequests();
   }, []);
 
-  const handleKYCAction = async (id: string, action: 'approve' | 'reject') => {
+  const approve = async (id: string) => {
     try {
       const response = await fetch('/api/admin/kyc', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, action }),
+        body: JSON.stringify({ id, action: 'approve' }),
       });
-
       if (response.ok) {
-        // Remove the processed request from the list
-        setRequests(prev => prev.filter(req => req.id !== id));
+        setRequests(prev => prev.filter(r => r.id !== id));
       }
-    } catch (error) {
-      console.error('Failed to process KYC request:', error);
+    } catch (e) {
+      console.error('Approve failed', e);
+    }
+  };
+
+  const reject = async (id: string, reason: string) => {
+    try {
+      const response = await fetch('/api/admin/kyc', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, action: 'reject', reason }),
+      });
+      if (response.ok) {
+        setRequests(prev => prev.filter(r => r.id !== id));
+      }
+    } catch (e) {
+      console.error('Reject failed', e);
     }
   };
 
@@ -69,7 +86,7 @@ export default function KYCPage() {
           {requests.length} pending request{requests.length !== 1 ? 's' : ''}
         </div>
       </div>
-      <KYCRequestsTable requests={requests} onAction={handleKYCAction} />
+      <KYCOverview records={requests} onApprove={approve} onReject={reject} />
     </div>
   );
 }

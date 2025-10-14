@@ -5,10 +5,13 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowRightLeft, Info, Star } from "lucide-react"
+import { ArrowRightLeft, Info, Star, Filter } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { convertCurrency } from "@/lib/mock-api"
 import { cn } from "@/lib/utils"
+import { mockP2PAds, mockTraders, getTrader, getAdsByTrader, P2PAd, P2POrder, PaymentMethod } from "@/lib/p2p-mock-data"
+import { TraderProfileModal } from "@/components/p2p/TraderProfileModal"
+import { OrderModal } from "@/components/p2p/OrderModal"
 
 const traders = [
   {
@@ -73,6 +76,15 @@ export default function P2PPage() {
   const [amount, setAmount] = useState("1000")
   const [liveRates, setLiveRates] = useState<{ [key: string]: number }>({})
   const [loadingRates, setLoadingRates] = useState(true)
+  
+  // P2P Trading State
+  const [selectedTrader, setSelectedTrader] = useState<string | null>(null)
+  const [selectedAd, setSelectedAd] = useState<P2PAd | null>(null)
+  const [showTraderModal, setShowTraderModal] = useState(false)
+  const [showOrderModal, setShowOrderModal] = useState(false)
+  const [filterPair, setFilterPair] = useState<string>('all')
+  const [filterPayment, setFilterPayment] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<'price' | 'rating'>('price')
 
   // Fetch live exchange rates
   useEffect(() => {
@@ -155,6 +167,101 @@ export default function P2PPage() {
     return `≈ ${usdAmount.toFixed(6)} USDT`
   }
 
+  // P2P Filtering and Sorting
+  const filterAds = (ads: P2PAd[], type: 'buy' | 'sell') => {
+    return ads
+      .filter(ad => ad.type === type)
+      .filter(ad => filterPair === 'all' || `${ad.cryptoCurrency}/${ad.fiatCurrency}` === filterPair)
+      .filter(ad => filterPayment === 'all' || ad.paymentMethods.includes(filterPayment as PaymentMethod))
+      .sort((a, b) => {
+        if (sortBy === 'price') {
+          return type === 'buy' ? a.price - b.price : b.price - a.price;
+        }
+        const traderA = getTrader(a.traderId);
+        const traderB = getTrader(b.traderId);
+        return (traderB?.rating || 0) - (traderA?.rating || 0);
+      });
+  };
+
+  const buyAds = filterAds(mockP2PAds, 'sell'); // Users buy from sellers
+  const sellAds = filterAds(mockP2PAds, 'buy'); // Users sell to buyers
+
+  const handleTraderClick = (traderId: string) => {
+    setSelectedTrader(traderId);
+    setShowTraderModal(true);
+  };
+
+  const handleAdClick = (ad: P2PAd) => {
+    setSelectedAd(ad);
+    setShowOrderModal(true);
+  };
+
+  const handleOrderCreated = (order: P2POrder) => {
+    // Save to localStorage
+    const stored = localStorage.getItem('p2p-orders');
+    const orders: P2POrder[] = stored ? JSON.parse(stored) : [];
+    orders.push(order);
+    localStorage.setItem('p2p-orders', JSON.stringify(orders));
+  };
+
+  const uniquePairs = Array.from(new Set(mockP2PAds.map(ad => `${ad.cryptoCurrency}/${ad.fiatCurrency}`)));
+  const paymentMethods: PaymentMethod[] = ['Bank Transfer', 'Mobile Money'];
+
+  const renderAdRow = (ad: P2PAd, actionLabel: string, actionColor: string) => {
+    const trader = getTrader(ad.traderId);
+    if (!trader) return null;
+
+    return (
+      <div key={ad.id} className="grid md:grid-cols-6 gap-4 md:gap-6 p-4 border border-gray-200 rounded-lg hover:border-blue-400 transition-colors hover:shadow-md">
+        <div className="space-y-1">
+          <p className="text-xs text-gray-600 mb-1 md:hidden">Trader</p>
+          <button 
+            onClick={() => handleTraderClick(trader.id)}
+            className="font-medium text-foreground hover:text-blue-600 text-left"
+          >
+            {trader.name}
+          </button>
+          <p className="text-xs text-gray-600">{trader.totalTrades} trades</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs text-gray-600 mb-1 md:hidden">Price</p>
+          <p className="text-lg font-semibold text-foreground">{ad.price} {ad.fiatCurrency}</p>
+          <p className="text-xs text-gray-600">{ad.cryptoCurrency}/{ad.fiatCurrency}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs text-gray-600 mb-1 md:hidden">Available</p>
+          <p className="text-sm text-foreground">{ad.available} {ad.cryptoCurrency}</p>
+          <p className="text-xs text-gray-600">{ad.minLimit}-{ad.maxLimit} {ad.fiatCurrency}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs text-gray-600 mb-1 md:hidden">Payment</p>
+          <div className="flex flex-wrap gap-1">
+            {ad.paymentMethods.map((method) => (
+              <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
+                {method}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs text-gray-600 mb-1 md:hidden">Rating</p>
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span className="text-sm font-medium">{trader.rating}%</span>
+          </div>
+        </div>
+        <div>
+          <Button 
+            onClick={() => handleAdClick(ad)}
+            className={cn("w-full", actionColor)}
+          >
+            {actionLabel}
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -172,120 +279,132 @@ export default function P2PPage() {
         </TabsList>
 
         <TabsContent value="buy" className="space-y-6 mt-6">
+          {/* Filters */}
+          <Card className="p-4">
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium">Filters:</span>
+              </div>
+              <Select value={filterPair} onValueChange={setFilterPair}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Pairs" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Pairs</SelectItem>
+                  {uniquePairs.map(pair => (
+                    <SelectItem key={pair} value={pair}>{pair}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterPayment} onValueChange={setFilterPayment}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Payment Method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Methods</SelectItem>
+                  {paymentMethods.map(method => (
+                    <SelectItem key={method} value={method}>{method}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort By" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="price">Best Price</SelectItem>
+                  <SelectItem value="rating">Top Rated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Card>
+
           <Card className="shadow-lg border-gray-200">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Buy USDT</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Buy Crypto</h3>
               <div className="space-y-4">
                 {/* Header for desktop */}
                 <div className="hidden md:grid md:grid-cols-6 gap-6 p-4 bg-gray-50 rounded-lg font-medium text-sm text-gray-700">
                   <div>Trader</div>
                   <div>Price</div>
-                  <div>Limits</div>
+                  <div>Available/Limits</div>
                   <div>Payment Methods</div>
                   <div>Rating</div>
                   <div>Action</div>
                 </div>
                 
-                {traders.map((trader) => (
-                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 md:gap-6 p-4 border border-gray-200 rounded-lg hover:border-green-400 transition-colors hover:shadow-md">
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Trader</p>
-                      <p className="font-medium text-foreground">{trader.name}</p>
-                      <p className="text-xs text-gray-600">{trader.trades} trades</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Price</p>
-                      <p className="text-lg font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
-                      <p className="text-xs text-gray-600">per USDT</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Limits</p>
-                      <p className="text-sm text-foreground">
-                        ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Payment Methods</p>
-                      <div className="flex flex-wrap gap-1">
-                        {trader.paymentMethods.map((method) => (
-                          <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
-                            {method}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Rating</p>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{trader.rating}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <Button className="w-full bg-green-600 hover:bg-green-700 text-white">Buy</Button>
-                    </div>
-                  </div>
-                ))}
+                {buyAds.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">No ads match your filters</p>
+                ) : (
+                  buyAds.map(ad => renderAdRow(ad, 'Buy', 'bg-green-600 hover:bg-green-700 text-white'))
+                )}
               </div>
             </div>
           </Card>
         </TabsContent>
 
         <TabsContent value="sell" className="space-y-6 mt-6">
+          {/* Filters */}
+          <Card className="p-4">
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium">Filters:</span>
+              </div>
+              <Select value={filterPair} onValueChange={setFilterPair}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Pairs" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Pairs</SelectItem>
+                  {uniquePairs.map(pair => (
+                    <SelectItem key={pair} value={pair}>{pair}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterPayment} onValueChange={setFilterPayment}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Payment Method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Methods</SelectItem>
+                  {paymentMethods.map(method => (
+                    <SelectItem key={method} value={method}>{method}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Sort By" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="price">Best Price</SelectItem>
+                  <SelectItem value="rating">Top Rated</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </Card>
+
           <Card className="shadow-lg border-gray-200">
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Sell USDT</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Sell Crypto</h3>
               <div className="space-y-4">
                 {/* Header for desktop */}
                 <div className="hidden md:grid md:grid-cols-6 gap-6 p-4 bg-gray-50 rounded-lg font-medium text-sm text-gray-700">
                   <div>Trader</div>
                   <div>Price</div>
-                  <div>Limits</div>
+                  <div>Available/Limits</div>
                   <div>Payment Methods</div>
                   <div>Rating</div>
                   <div>Action</div>
                 </div>
                 
-                {traders.map((trader) => (
-                  <div key={trader.id} className="grid md:grid-cols-6 gap-4 md:gap-6 p-4 border border-gray-200 rounded-lg hover:border-red-400 transition-colors hover:shadow-md">
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Trader</p>
-                      <p className="font-medium text-foreground">{trader.name}</p>
-                      <p className="text-xs text-gray-600">{trader.trades} trades</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Price</p>
-                      <p className="text-lg font-semibold text-foreground">₦{trader.price.toLocaleString()}</p>
-                      <p className="text-xs text-gray-600">per USDT</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Limits</p>
-                      <p className="text-sm text-foreground">
-                        ₦{trader.min.toLocaleString()} - ₦{trader.max.toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Payment Methods</p>
-                      <div className="flex flex-wrap gap-1">
-                        {trader.paymentMethods.map((method) => (
-                          <span key={method} className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
-                            {method}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs text-gray-600 mb-1 md:hidden">Rating</p>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-medium">{trader.rating}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <Button className="w-full bg-red-600 hover:bg-red-700 text-white">Sell</Button>
-                    </div>
-                  </div>
-                ))}
+                {sellAds.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">No ads match your filters</p>
+                ) : (
+                  sellAds.map(ad => renderAdRow(ad, 'Sell', 'bg-red-600 hover:bg-red-700 text-white'))
+                )}
               </div>
             </div>
           </Card>
@@ -432,6 +551,33 @@ export default function P2PPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Modals */}
+      {selectedTrader && (
+        <TraderProfileModal
+          trader={mockTraders[selectedTrader]}
+          ads={getAdsByTrader(selectedTrader)}
+          open={showTraderModal}
+          onClose={() => {
+            setShowTraderModal(false);
+            setSelectedTrader(null);
+          }}
+          onSelectAd={handleAdClick}
+        />
+      )}
+
+      {selectedAd && (
+        <OrderModal
+          ad={selectedAd}
+          trader={getTrader(selectedAd.traderId)!}
+          open={showOrderModal}
+          onClose={() => {
+            setShowOrderModal(false);
+            setSelectedAd(null);
+          }}
+          onOrderCreated={handleOrderCreated}
+        />
+      )}
     </div>
   )
 }

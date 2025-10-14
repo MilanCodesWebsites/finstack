@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { MerchantAdWizard } from '@/components/merchant/MerchantAdWizard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,15 +36,6 @@ interface WalletBalance {
   USDT: number;
 }
 
-interface TradeRate {
-  id: string;
-  type: 'buy' | 'sell';
-  currency: 'USDT';
-  rate: number;
-  minAmount: number;
-  maxAmount: number;
-  isActive: boolean;
-}
 
 export default function MerchantDashboard() {
   const [merchantStats, setMerchantStats] = useState<MerchantStats>({
@@ -58,26 +51,6 @@ export default function MerchantDashboard() {
     USDT: 8500
   });
 
-  const [tradeRates, setTradeRates] = useState<TradeRate[]>([
-    {
-      id: '1',
-      type: 'buy',
-      currency: 'USDT',
-      rate: 1620,
-      minAmount: 10,
-      maxAmount: 1000,
-      isActive: true
-    },
-    {
-      id: '2',
-      type: 'sell',
-      currency: 'USDT',
-      rate: 1650,
-      minAmount: 10,
-      maxAmount: 1000,
-      isActive: true
-    }
-  ]);
 
   const [showBalance, setShowBalance] = useState(true);
   const [copied, setCopied] = useState('');
@@ -111,29 +84,13 @@ export default function MerchantDashboard() {
     setTimeout(() => setCopied(''), 2000);
   };
 
-  const updateRate = (id: string, newRate: number) => {
-    setTradeRates(prev => prev.map(rate => 
-      rate.id === id ? { ...rate, rate: newRate } : rate
-    ));
-  };
-
-  const toggleRateStatus = (id: string) => {
-    setTradeRates(prev => prev.map(rate => 
-      rate.id === id ? { ...rate, isActive: !rate.isActive } : rate
-    ));
-  };
-
   const completionRate = ((merchantStats.completedTrades / merchantStats.totalTrades) * 100).toFixed(1);
 
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-6">
       <div className="text-center md:text-left">
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-2">
-          Merchant Dashboard
-        </h1>
-        <p className="text-sm md:text-base text-gray-600">
-          Manage your P2P trading business and monitor performance
-        </p>
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-2">Merchant Dashboard</h1>
+        <p className="text-sm md:text-base text-gray-600">Manage your P2P trading business and monitor performance</p>
       </div>
 
       {/* Stats Overview */}
@@ -274,114 +231,18 @@ export default function MerchantDashboard() {
           </div>
         </Card>
       </div>
-
-      {/* Trading Rates Management */}
+      {/* Post Ad (Embedded Wizard) */}
       <Card className="p-4 md:p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold">Your Trading Rates</h3>
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-            Add New Rate
-          </Button>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Create New P2P Ad</h3>
+          <Link href="/dashboard/merchant/post-ad" className="text-xs text-blue-600 hover:underline">Open full page</Link>
         </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {tradeRates.map((rate) => (
-            <div key={rate.id} className="p-4 border border-gray-200 rounded-lg">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className={cn(
-                    "px-2 py-1 rounded-full text-xs font-medium",
-                    rate.type === 'buy' 
-                      ? "bg-green-100 text-green-800" 
-                      : "bg-blue-100 text-blue-800"
-                  )}>
-                    {rate.type === 'buy' ? 'Buying' : 'Selling'} {rate.currency}
-                  </span>
-                  <Switch
-                    checked={rate.isActive}
-                    onCheckedChange={() => toggleRateStatus(rate.id)}
-                  />
-                </div>
-                <span className={cn(
-                  "text-xs px-2 py-1 rounded-full",
-                  rate.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
-                )}>
-                  {rate.isActive ? 'Active' : 'Inactive'}
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor={`rate-${rate.id}`} className="text-sm">
-                    Rate (NGN per {rate.currency})
-                  </Label>
-                  <div className="relative mt-1">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <Input
-                      id={`rate-${rate.id}`}
-                      type="number"
-                      value={rate.rate}
-                      onChange={(e) => updateRate(rate.id, parseFloat(e.target.value))}
-                      className="pl-10"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Market rate: ₦{liveRate} (
-                    <span className={cn(
-                      rate.rate > liveRate ? "text-red-600" : "text-green-600"
-                    )}>
-                      {rate.rate > liveRate ? '+' : ''}
-                      {((rate.rate - liveRate) / liveRate * 100).toFixed(2)}%
-                    </span>
-                    )
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-sm">Min Amount</Label>
-                    <Input
-                      type="number"
-                      value={rate.minAmount}
-                      onChange={(e) => {
-                        const newRates = [...tradeRates];
-                        const index = newRates.findIndex(r => r.id === rate.id);
-                        newRates[index].minAmount = parseFloat(e.target.value);
-                        setTradeRates(newRates);
-                      }}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-sm">Max Amount</Label>
-                    <Input
-                      type="number"
-                      value={rate.maxAmount}
-                      onChange={(e) => {
-                        const newRates = [...tradeRates];
-                        const index = newRates.findIndex(r => r.id === rate.id);
-                        newRates[index].maxAmount = parseFloat(e.target.value);
-                        setTradeRates(newRates);
-                      }}
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="w-full"
-                >
-                  Update Rate
-                </Button>
-              </div>
-            </div>
-          ))}
+        <div className="border-t pt-4">
+          <MerchantAdWizard />
         </div>
       </Card>
 
-      {/* Recent Trades */}
+  {/* Recent Trades */}
       <Card className="p-4 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Recent Trades</h3>
